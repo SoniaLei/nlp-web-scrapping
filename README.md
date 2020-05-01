@@ -16,11 +16,13 @@ After raising a pull request in the git hub repository, the commit will then tri
 
 ![image2](image/pull-request/pull-request-build-status.png)
 
-#### Pull request with circle CI build
+#### Successful build
 
 Once the build has finished, it will show a green status for the build, allowing you to merge pull request to the target branch.
 
 ![image3](image/pull-request/pull-request-build-successful.png)
+
+#### Merge pull request
 
 After merging the branch, the status of this pr will then show as merged 
 
