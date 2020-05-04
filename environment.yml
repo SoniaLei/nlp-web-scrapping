@@ -1,0 +1,16 @@
+name: nlp
+channels:
+  - defaults
+  - conda-forge
+dependencies:
+  - python==3.7
+  - ipykernel
+  - pandas>=0.25.3
+  - numpy>=1.18.1
+  - scikit-learn>=0.22.1
+  - beautifulsoup4>=4.8.0
+  - nltk>=3.4.4
+  - spacy>=2.2.3
+  - wordcloud
+  - holoviews
+  - textblob
