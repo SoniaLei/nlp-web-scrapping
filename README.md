@@ -27,3 +27,4 @@ Once the build has finished, it will show a green status for the build, allowing
 After merging the branch, the status of this pr will then show as merged 
 
 ![image4](image/pull-request/pull-request-build-merge.png)
+
