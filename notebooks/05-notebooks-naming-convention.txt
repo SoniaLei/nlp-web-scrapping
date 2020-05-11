@@ -1,0 +1,16 @@
+# notebooks naming convention:
+
+0000 Four digit
+only middle slice -
+data set name being used
+vectorizer name from sklearn
+
+Example :
+0000-datasetused-vectorizer
+0001-rawdata-countVectorizer.ipynb
+0002-basic_clean-countVectorizer.ipynb
+0003-basic_clean-countVectorizer.ipynb
+0010-rawdata-TfidfVectorizer.ipynb
+0011-rawdata-TfidfVectorizer.ipynb
+0020-rawdata-glove.ipynb
+...
