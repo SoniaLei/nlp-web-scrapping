@@ -1,21 +1,42 @@
-from sklearn.pipeline import Pipeline
-from src.tweet_cleaner import TweetCleaner
-from src.tweet_vectorizer import TweetVectorizer
-from src.tweet_classifier import TweetClassifier
+from sklearn import pipeline
+from src.registry import *
+from src.transformers import Estimator
 
 
-classifiers = [
+class Pipeline:
 
-]
+    def __init__(self, train, test, pipeline_config, cv_=5):
+        #self.exp_name = exp_name
+        self.train = train
+        self.test = test
+        self._pipeline_config = pipeline_config
+        self.cv_ = cv_
+        if self._validate_steps(pipeline_config):
+            self.pipeline_steps = None
 
-pipeline = Pipeline(steps=[
-    ('cleaner', TweetCleaner()),
-    ('vectorizer', TweetVectorizer()),
-    ('classifier', TweetClassifier())])
+    def _validate_steps(self, pipe_conf):
+        """
+        """
+        return True
 
-print('Fitting train data to labels...')
-pipeline.fit(None, None)
+    def create(self):
+        # loop through all estimators and transformers and instantiate using factory
+        self.pipeline = pipeline.Pipeline(steps=[
+            ('cleaner', StopWordsRemoval()),
+            ('classifier', TweetCleaner()),
+            ('vectorizer', Lematization()),
+            ('estimator', Estimator())
+        ])
 
-print('\nMaking predictions...')
-y_pred = pipeline.predict(None)
+        return self
 
+    def fit(self, X=None, y=None):
+        print("Fitting the pipeline")
+        self.pipeline.fit(X, y)
+        return self
+
+    def predict(self, X=None):
+        return self.pipeline.predict(X)
+
+    def predict_proba(self, X=None):
+        return self.pipeline.predict_proba(X)
