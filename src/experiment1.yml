@@ -1,11 +1,57 @@
-# Comment
+# Block commenting of YAML files in VSCode and PyCharm can be achieved
+# by selecting lines and using shortcut Ctrl + /
+
+# Location of data files
 data_files:
-  train: "train.csv"
-  test: "test.csv"
+  location: "$PROJECT_PATH$/data/raw"
+  train: "tweets-train.csv"
+  test: "tweets-test.csv"
 
-# provide of a list of transformers to apply to data
-# possible values: transformer1, transformer2, transformer3
-transformers: ["transformer1", "transformer2"]
+# A list of transformers to apply to data
+# Possible values (an example at the moment): 
+#   transformer1      short description what it does
+#   transformer2      short description what it does
+#   transformer3      short description what it does
+#   vectorizer1       short description what it does
+#   vectorizer2       short description what it does
+transformers:
+  - transformer1:
+    param1: 0
+    param2: 1
+  - transformer2:
+    param1: 0
+  - vectorizer1:
+  
 
+# A list (most often just one) of estimators that will be used to fit data on and then make predictions
+# Possible values:
+#   logreg:           sklearn Logistic Regressor
+#   svm:              sklearn Support Vector Machine
+#   nbayes:           sklearn Multinomial Naive Bayes Classifier
+#   randforest:       sklearn Random Forest
+estimators: 
+  - logreg:
+    cv: true
+    cv_folds: 5
+    params:
+      max_iter: 1000
+  
+  # - svm:
+  #   cv: false
+  #   params:
+  #     param1: 1
+  #     param2: 10
+  #     param3: "not"
 
-estimators: []
+  # - nbayes:
+    # - cv: false
+    # - params:
+    #   - param1: 1
+    #   - param2: 10
+    #   - param3: 2
+
+  # - randforest:
+  #   - cv: false
+  #   - params:
+  #     - param1: 1
+  #     - param2: 10
