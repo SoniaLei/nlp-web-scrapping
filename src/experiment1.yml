@@ -1,0 +1,11 @@
+# Comment
+data_files:
+  train: "train.csv"
+  test: "test.csv"
+
+# provide of a list of transformers to apply to data
+# possible values: transformer1, transformer2, transformer3
+transformers: ["transformer1", "transformer2"]
+
+
+estimators: []

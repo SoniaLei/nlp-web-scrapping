@@ -3,7 +3,7 @@ from sklearn.metrics import accuracy_score, classification_report, confusion_mat
 from sklearn.linear_model import LogisticRegression
 from sklearn.naive_bayes import MultinomialNB
 from sklearn.svm import SVC
-from src.transformers import StopWordsRemoval, Lematization, TweetCleaner
+from transformers import StopWordsRemoval, Lematization, TweetCleaner
 
 vectorizers_registry = {'CountVectorizer': CountVectorizer,
                         'TfidfVectorizer': TfidfVectorizer}

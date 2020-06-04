@@ -1,4 +1,4 @@
-from src.experiment import Experiment
+from experiment import Experiment
 
 # we'll need to pass the arg to main
 # hardcoded for now
@@ -6,5 +6,5 @@ from src.experiment import Experiment
 if __name__ == '__main__':
     print("Starting ml pipeline program.")
     e = Experiment()
-    e.read_json('../experiments/exp_test.json')
+    e.init('exp_test.json')
     e.run()
