@@ -10,13 +10,10 @@ class Experiment:
     def __init__(self):
         self._config = None
         self._name = None
-        self._train_data = None
-        self._test_data = None
+        self._train_X, self._train_Y = None, None
+        self._test_X, self._test_Y = None, None
         self._pipeline = None
         self._metrics = None
-
-    def _validate_datafile(self):
-        raise NotImplementedError
 
     def _read_config(self, conf_path):
         print("Transformed json file to dict")
@@ -31,18 +28,34 @@ class Experiment:
         finally:
             json_file.close()"""
 
-    def _csv_to_pandas(self, filename, *args, **kwargs):
-        return pd.read_csv(filename, *args, **kwargs)
+    def _csv_to_pandas(self, datafile='train'):
+        
+        data = None
+        
+        if datafile == 'train':
+            # load train data file
+            pass
+        elif datafile == 'test':
+            # load test data file
+            pass
+        else:
+            raise ValueError("Parameter 'datafile' accepts only 'train' and 'test' values")
+        
+        return data
 
     def _read_data(self):
-        self._train_data = None
-        self._test_data = None
+        train = self._csv_to_pandas('train')
+        test = self._csv_to_pandas('test')
 
-        """print("Reading test train files.")
-        train = self.exp_conf['traindata_path']
-        test = self.exp_conf['testdata_path']
-        self.train = self.csv_to_pandas(train)
-        self.test = self.csv_to_pandas(test)"""
+        # needs to be changed to handle situations when train or test data is not loaded correctly
+        if train is None or test is None:
+            return
+
+        self._train_X = train['text']
+        self._train_Y = train['sentiment']
+
+        self._test_X = test['text']
+        self._test_Y = test['sentiment']
 
     def _create_pipeline(self):
         print("Getting pipeline.")
@@ -62,6 +75,8 @@ class Experiment:
         print("Starting Experiment")
         self._pipeline.fit()
         predictions = self._pipeline.predict()
+
+        # print/output experiment results
      
     def save_mlflow(self):
         pass

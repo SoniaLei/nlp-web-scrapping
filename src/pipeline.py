@@ -1,5 +1,6 @@
 from sklearn import pipeline
 from transformers import *
+import sklearn
 
 
 class Pipeline:
@@ -20,8 +21,8 @@ class Pipeline:
         self._pipeline = pipeline.Pipeline(steps=[
             ('cleaner', StopWordsRemoval()),
             ('classifier', TweetCleaner()),
-            ('vectorizer', Lematization()),
-            ('estimator', Estimator())])
+            ('vectorizer', sklearn.feature_extraction.text.CountVectorizer()),
+            ('estimator', sklearn.linear_model.LogisticRegression()])
 
         return self
 
