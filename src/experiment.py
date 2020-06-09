@@ -1,82 +1,80 @@
-import json
-import pandas as pd
-from pipeline import Pipeline
+"""Experiment module to create, run and store experiments' artifacts."""
+from src.pipeline import Pipeline
+from src.context import Context
+from src.metrics import Metrics
+from src.data import Data
+import mlflow
+
 
 class Experiment:
     """
     Experiment class that orchestrates the execution of an experiment.
     """
 
-    def __init__(self):
-        self._config = None
-        self._name = None
-        self._train_X, self._train_Y = None, None
-        self._test_X, self._test_Y = None, None
-        self._pipeline = None
-        self._metrics = None
+    def __init__(self, conf=None, data=None, pipeline=None):
+        self.config = conf
+        self.data = data
+        self.pipeline = pipeline
+        self.results = None
 
-    def _read_config(self, conf_path):
-        print("Transformed json file to dict")
-        self._config = None
+    @property
+    def config(self):
+        return self._conf
 
-        """json_file = open(conf_path)
-        try:
-            exp_params = json.load(json_file)
-            self.exp_conf = exp_params
-        except FileNotFoundError:
-            pass
-        finally:
-            json_file.close()"""
-
-    def _csv_to_pandas(self, datafile='train'):
-        
-        data = None
-        
-        if datafile == 'train':
-            # load train data file
-            pass
-        elif datafile == 'test':
-            # load test data file
-            pass
+    @config.setter
+    def config(self, conf):
+        if isinstance(conf, Context) or conf is None:
+            self._conf = conf
         else:
-            raise ValueError("Parameter 'datafile' accepts only 'train' and 'test' values")
-        
-        return data
+            raise ValueError("Configuration must be a Context object.")
 
-    def _read_data(self):
-        train = self._csv_to_pandas('train')
-        test = self._csv_to_pandas('test')
+    @property
+    def name(self):
+        return self.config.exp_name
 
-        # needs to be changed to handle situations when train or test data is not loaded correctly
-        if train is None or test is None:
-            return
+    @property
+    def data(self):
+        return self._data
 
-        self._train_X = train['text']
-        self._train_Y = train['sentiment']
+    @data.setter
+    def data(self, data_conf):
+        if data_conf is None and self.config is None:
+            raise ValueError("Data object must be provided if conf parameter is None")
+        if data_conf is None and self.config is not None:
+            self._data = Data(train=self.config.train,
+                              test=self.config.test,
+                              target=self.config.target,
+                              features=self.config.features)
+        if isinstance(data_conf, Data):
+            self._data = data_conf
 
-        self._test_X = test['text']
-        self._test_Y = test['sentiment']
+    @property
+    def pipeline(self):
+        return self._pipeline
 
-    def _create_pipeline(self):
-        print("Getting pipeline.")
-        self._pipeline = Pipeline()
-        self._pipeline.init(self._config)
-
-    def init(self, conf_path=None):
-        self._name = ""
-        self._read_config(conf_path)
-        self._read_data()
-        self._create_pipeline()
+    @pipeline.setter
+    def pipeline(self, pipeline_conf):
+        if pipeline_conf is None and self.config is None:
+            raise ValueError("Pipeline object must be provided if conf parameter is None")
+        if pipeline_conf is None and self.config is not None:
+            self._pipeline = Pipeline(self.config.transformers,
+                                      self.config.vectorizer,
+                                      self.config.estimators).init()
+        if isinstance(pipeline_conf, Pipeline):
+            self._pipeline = pipeline_conf.init()  # init the pipeline
 
     def run(self):
-        """
-        Starts experiment.
-        """
-        print("Starting Experiment")
-        self._pipeline.fit()
-        predictions = self._pipeline.predict()
+        """I don;t like this method hardcoded the predict """
+        # PROB ***
+        pipeline_fitted = self.pipeline.fit(self.data.train_X,
+                                            self.data.train_Y)
+        # TODO diff size predicted prdict vs pred_proba
+        predicted = pipeline_fitted.predict(self.data.test_X)
 
-        # print/output experiment results
-     
-    def save_mlflow(self):
-        pass
+        # Not sure a good idea
+        self.results = Metrics(self.name, self.data.test_Y, predicted)
+
+    def save_to_mlflow(self):
+        with mlflow.start_run(run_name=self.name):
+            mlflow.log_param('file name', 'TESTTEST')
+            mlflow.log_metric('accuracy', self.results.accuracy_score)

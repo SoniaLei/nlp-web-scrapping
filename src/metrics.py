@@ -1,27 +1,32 @@
 from sklearn.metrics import accuracy_score, classification_report, confusion_matrix, r2_score
+import pandas as pd
 
 class Metrics:
-    def __init__(self, results):
-        self.results = results
-        self.score = None
-        self.accuracy = None
-        self._metrics_summary = None
+    def __init__(self, exp_name, test_Y, predictions, output_path='../data/results/'):
+        self.exp_name = exp_name
+        self.test_Y = test_Y
+        self.predictions = predictions
+        self.output_path = output_path
+        self.file_extension = 'csv'
 
-    def get_summary_report(self):
-        pass
+    @property
+    def summary_report(self):
+        return NotImplemented
 
-    def get_score(self):
-        pass
+    @property
+    def accuracy_score(self):
+        return accuracy_score(self.test_Y, self.predictions)
 
-    def get_accuracy(self):
-        pass
+    @property
+    def classification_report(self):
+        return classification_report(self.test_Y, self.predictions)
 
-    def get_class_report(self):
-        pass
+    @property
+    def confusion_matrix(self):
+        return confusion_matrix(self.test_Y, self.predictions)
 
-    def get_confusion_matrix(self):
-        pass
+    def dump_results_csv(self):
+        data = pd.DataFrame({'test_Y': self.test_Y, 'Y_hat': self.predictions})
+        data.to_csv(self.output_path + self.exp_name + self.file_extension)
 
-    def dump_metrics_results_csv(self):
-        pass
 
