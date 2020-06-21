@@ -1,5 +1,4 @@
 from sklearn import pipeline
-from src.transformers import *
 
 
 class Pipeline:
@@ -61,16 +60,21 @@ class Pipeline:
     def init(self):
         """Puts all transformers one vectorizer for now and first estimator
         This will change once implementing grid search approach"""
-        self._pipeline = pipeline.Pipeline(steps=[
-           # *self.transformers,
-             self.vectorizers[0],  # getting first vec being passed
-             self.estimators[0]  # getting first est being passed
-        ])
+
+        steps = []
+        for t in self.transformers:
+            steps.append(t)
+        
+        steps.append(self.vectorizers[0]) # getting first vec being passed
+        steps.append(self.estimators[0]) # getting first est being passed
+
+        self._pipeline = pipeline.Pipeline(steps=steps)
+
         return self
 
     def fit(self, X=None, y=None):
         if self._pipeline is None:
-            raise ValueError("Pipeline hasn't been created. Use method create() to create it first.")
+            raise ValueError("Pipeline hasn't been created. Use method init() to create it first.")
 
         self._pipeline.fit(X, y)
         return self
@@ -81,12 +85,12 @@ class Pipeline:
 
     def predict(self, X=None):
         if self._pipeline is None:
-            raise ValueError("Pipeline hasn't been created. Use method create() to create it first.")
+            raise ValueError("Pipeline hasn't been created. Use method init() to create it first.")
 
         return self._pipeline.predict(X)
 
     def predict_proba(self, X=None):
         if self._pipeline is None:
-            raise ValueError("Pipeline hasn't been created. Use method create() to create it first.")
+            raise ValueError("Pipeline hasn't been created. Use method init() to create it first.")
 
         return self._pipeline.predict_proba(X)

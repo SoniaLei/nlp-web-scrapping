@@ -1,8 +1,8 @@
 """Experiment module to create, run and store experiments' artifacts."""
-from src.pipeline import Pipeline
-from src.context import Context
-from src.metrics import Metrics
-from src.data import Data
+from .pipeline import Pipeline
+from .context import Context
+from .metrics import Metrics
+from .data import Data
 import mlflow
 
 
@@ -38,8 +38,11 @@ class Experiment:
 
     @data.setter
     def data(self, data_conf):
+
+        # TODO: Bad design, self.config must be set before self.data is set. Must be fixed
         if data_conf is None and self.config is None:
             raise ValueError("Data object must be provided if conf parameter is None")
+
         if data_conf is None and self.config is not None:
             self._data = Data(train=self.config.train,
                               test=self.config.test,
@@ -54,22 +57,24 @@ class Experiment:
 
     @pipeline.setter
     def pipeline(self, pipeline_conf):
+
+        # TODO: Bad design, self.config must be set before self.pipeline is set. Must be fixed
         if pipeline_conf is None and self.config is None:
             raise ValueError("Pipeline object must be provided if conf parameter is None")
-        if pipeline_conf is None and self.config is not None:
+
+        # TODO: Bad design, self.config must be set before self.pipeline is set. Must be fixed
+        if pipeline_conf is None and self.config is not None: 
             self._pipeline = Pipeline(self.config.transformers,
                                       self.config.vectorizer,
                                       self.config.estimators).init()
+                                      
         if isinstance(pipeline_conf, Pipeline):
             self._pipeline = pipeline_conf.init()  # init the pipeline
 
     def run(self):
-        """I don;t like this method hardcoded the predict """
-        # PROB ***
-        pipeline_fitted = self.pipeline.fit(self.data.train_X,
-                                            self.data.train_Y)
-        # TODO diff size predicted prdict vs pred_proba
-        predicted = pipeline_fitted.predict(self.data.test_X)
+
+        self.pipeline.fit(self.data.train_X, self.data.train_Y)
+        predicted = self.pipeline.predict(self.data.test_X)
 
         # Not sure a good idea
         self.results = Metrics(self.name, self.data.test_Y, predicted)

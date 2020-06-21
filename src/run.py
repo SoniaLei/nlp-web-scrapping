@@ -1,25 +1,26 @@
-from src.experiment import Experiment, Data
-from src.context import Context
-from src.pipeline import Pipeline
+from mlpipeline.experiment import Experiment, Data
+from mlpipeline.context import Context
+from mlpipeline.pipeline import Pipeline
 import pandas as pd
 
-# TODO we'll need to pass the arg to main hardcoded for now
 
 if __name__ == '__main__':
+
     print("Starting ml pipeline program.")
 
     # AUTOMATIC APPROACH #######################################
-    config = Context(conf_file='experiment_template.yml')
+    config = Context(conf_file='./experiment_configs/experiment002.yml')
     config = config.set_configuration_parameters()
     experiment = Experiment(config)
     experiment.run()
     print(experiment.results.confusion_matrix)
-    print(experiment.results.predictions)
+    print(experiment.results.accuracy_score)
+    #print(experiment.results.predictions)
     print("SUCCESSFUL!!!!!")
     # END AUTOMATIC APPROACH ####################################
 
     # context params
-    print(config.exp_name)
+    """print(config.exp_name)
     print(config.conf_file)
     print(config.train)
     print(config.test)
@@ -98,5 +99,5 @@ if __name__ == '__main__':
     print(experiment.pipeline)
     print(type(experiment.pipeline))  # Pipeline class
     experiment.pipeline.init()
-    print(type(experiment.pipeline._pipeline))  # SKLEARN PIPELINE
+    print(type(experiment.pipeline._pipeline))  # SKLEARN PIPELINE"""
 

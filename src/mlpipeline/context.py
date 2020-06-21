@@ -2,7 +2,7 @@
 from datetime import datetime
 import yaml
 import pandas as pd
-from src.factory import ObjectFactory
+from .factory import ObjectFactory
 
 
 class Context:
@@ -52,9 +52,9 @@ class Context:
             raise ValueError("Experiment name must be string value.")
         if '/' in name:
             name = name.split('/')[-1]
-        if Context.split not in name:
-            raise ValueError(f"File name must contain {Context.split} "
-                             f"for readability.")
+        # if Context.split not in name:
+        #     raise ValueError(f"File name must contain {Context.split} "
+        #                      f"for readability.")
 
         date_format = f'{Context.split}%Y{Context.split}%m{Context.split}%d'
         date = datetime.today().strftime(date_format)
