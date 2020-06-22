@@ -86,6 +86,7 @@ def lemma(string_object):
 ### Replacing words with unambiguous antonyms by using WordNet.
 from nltk.corpus import wordnet as wn
 class word_antonym_replacer(object):
+
     def replace(self, word, pos=None):
         antonyms = set()
         for syn in wn.synsets(word, pos=pos): # pos argument which lets you constrain the part of speech of the word
@@ -96,55 +97,33 @@ class word_antonym_replacer(object):
         if len(antonyms) == 1: # If there is only 1 antonym replacement option replace that word.
             return antonyms.pop() # removes and returns last value from the list or the given index value
         else:
-                return None
+            return None
+    def wordRetrieval(self, token):
+        posTag = nltk.word_tokenize(token)
+        posTag = nltk.pos_tag(posTag)
+        print(posTag)
+        score = 0
+        for tag in posTag:
+            if tag[1] in adjList:
+                word = tag[0]
+                score = 1
+            else:
+                score = 0
+        return score
     def replace_negations(self, sent):
         i, l = 0, len(sent)
         words = []
         while i < l:
             word = sent[i]
             if word in negations and i+1 < l: # here we would sub in a list of negation terms:
-                ant = self.replace(sent[i+1])
-                if ant:
-                    words.append(ant)
-                    i += 2
-                    continue
+                test = self.wordRetrieval(sent[i+1])
+                if test == 1:
+                    print(test)
+                    ant = self.replace(sent[i+1])
+                    if ant:
+                        words.append(ant)
+                        i += 2
+                        continue
             words.append(word)
             i += 1
         return words
-
-def tokenise(texts, control):
-    
-    useContractions = True
-    useStopWords = True
-    useDoubleLetterRemoval = True
-    useLemmatization = True
-
-    tokenizedTweets = []
-    for tweetString in texts:
-        if useContractions:
-            tweetString = expand_contractions(tweetString)
-            tokenized = nltk.word_tokenize(tweetString)# tokenize tweet into list of tokens
-            rep_antonym = word_antonym_replacer ()
-            tokenized = rep_antonym.replace_negations(tokenized)
-            tweetString = TreebankWordDetokenizer().detokenize(tokenized) # adds list of tokens to list
-
-        if useStopWords:
-            tokens = stopwordRemoval(tweetString)
-            tweetString = TreebankWordDetokenizer().detokenize(tokens)
-
-        if useDoubleLetterRemoval:
-            tokens = doubleLetterRemoval(tweetString)
-            tweetString = TreebankWordDetokenizer().detokenize(tokens)
-
-        #if useSpellChecker:
-            #tokens = spellChecker(tweetString)
-            #tweetString = TreebankWordDetokenizer().detokenize(tokens)
-            
-        if useLemmatization:
-            tokens = lemma(tweetString)
-            tweetString = TreebankWordDetokenizer().detokenize(tokens)
-
-
-        tokenizedTweets.append(tweetString)
-            
-    return tokenizedTweets
