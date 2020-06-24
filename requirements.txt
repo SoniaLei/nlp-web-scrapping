@@ -3,7 +3,6 @@ numpy
 scikit-learn
 nltk
 spacy
-yaml
 mlflow
 holoviews
 textblob
