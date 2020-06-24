@@ -1,4 +1,4 @@
-from src.data import Data
+from mlpipeline.data import Data
 import pytest
 import pandas as pd
 

@@ -3,7 +3,6 @@ from .pipeline import Pipeline
 from .context import Context
 from .metrics import Metrics
 from .data import Data
-import mlflow
 
 
 class Experiment:
@@ -79,8 +78,5 @@ class Experiment:
         return self
 
     def save_to_mlflow(self):
-        mlflow.set_tracking_uri(Experiment.mlflow_uri_path)
-        print(mlflow.get_tracking_uri())
-        with mlflow.start_run(run_name=self.name):
-            mlflow.log_param('file name', 'TESTTEST')
-            mlflow.log_metric('accuracy', self.results.accuracy_score)
+        # TODO create mlflow instance?
+       pass
