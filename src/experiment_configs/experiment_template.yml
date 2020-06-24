@@ -1,0 +1,76 @@
+# Block commenting of YAML files in VSCode and PyCharm can be achieved
+# by selecting lines and using shortcut Ctrl + /
+
+
+# Location of data files
+data_files:
+  train: "../data/processed/cleanedDataV1.csv"
+  test: "../data/processed/cleanedDataV1.csv"
+  features: "text"
+  target: "sentiment"
+
+# A list of transformers to apply to data
+# tranformers found in transformers.py
+# Possible values (an example at the moment): 
+#   transformer1      short description what it does
+#   transformer2      short description what it does
+#   transformer3      short description what it does
+transformers:
+  - StopWordsRemoval:
+  - TweetCleaner:
+  - Lematization:
+
+# One vectorizer matching sklearn vectorizer name
+# To choose from:
+#   vectorizer1       short description what it does
+#   vectorizer2       short description what it does
+vectorizer:
+  - CountVectorizer:
+      encoding: 'utf-8'
+      lowercase: True
+      stop_words: 'english'
+
+  - TfidfVectorizer:
+      stop_words: None
+      max_features: 10000
+      ngram_range: (1, 1)
+
+
+
+# A list (most often just one) of estimators that will be used to fit data on and then make predictions
+# Possible values:
+#   logreg:           sklearn Logistic Regressor
+#   svm:              sklearn Support Vector Machine
+#   nbayes:           sklearn Multinomial Naive Bayes Classifier
+#   randforest:       sklearn Random Forest
+estimators:
+  - SVC:
+      C: 1.0
+      probability: True
+      cache_size: 200
+
+  - LogisticRegression:
+      penalty: l2
+      C: 1.0
+      max_iter: 100
+      n_jobs: -1
+
+
+  # - nbayes:
+    # - cv: false
+    # - params:
+    #   - param1: 1
+    #   - param2: 10
+    #   - param3: 2
+
+  # - randforest:
+  #   - cv: false
+  #   - params:
+  #     - param1: 1
+  #     - param2: 10
+
+
+# cross validation
+#cv: true
+#cv_folds: 5
+

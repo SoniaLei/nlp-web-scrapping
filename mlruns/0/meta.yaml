@@ -1,0 +1,4 @@
+artifact_location: file:///C:/Users/Elia/PycharmProjects/nlp-web-scrapping/mlruns/0
+experiment_id: '0'
+lifecycle_stage: active
+name: test_auc_roc_plts
