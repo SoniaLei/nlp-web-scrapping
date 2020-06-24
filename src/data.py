@@ -1,28 +1,56 @@
-"""Module data dealing with all data maters"""
+"""Module data dealing with all data aspects"""
 import pandas as pd
+
+class ValidData:
+    """
+    Class responsible to validate datasets.
+    """
+    def __init__(self, type_ds, type_col):
+        """Instantiates a new ValidData object"""
+        self.type_ds = type_ds
+        self.type_col = type_col
+
+    def __set_name__(self, owner, name):
+        """ValidData object name"""
+        self.name = name
+
+    def __set__(self, instance, value):
+        """validate datasets and sets pd.series"""
+        dataset, feature = value
+        if not isinstance(dataset, self.type_ds):
+            raise TypeError(f"{self.name} must be of type {self.type_ds}")
+        if not isinstance(feature, self.type_col):
+            raise TypeError(f"{feature} must be of type {self.type_col} found {type(feature)}.")
+        if feature not in list(dataset.columns):
+            raise ValueError(f"{feature} column not found in dataset for {self.name}.")
+        dataset = instance.remove_nan(dataset)
+        instance.__dict__[self.name] = dataset[feature]
+
+    def __get__(self, instance, owner):
+        """returns pd.series object"""
+        if instance is None:
+            return self
+        else:
+            return instance.__dict__.get(self.name, None)
 
 
 class Data:
+    """
+    Data class responsible to set data properties with right format to be digested by sklearn pipeline.
+    """
+    train_X = ValidData(pd.DataFrame, str)
+    train_Y = ValidData(pd.DataFrame, str)
+    test_X = ValidData(pd.DataFrame, str)
+    test_Y = ValidData(pd.DataFrame, str)
 
-    def __init__(self, *, train, test, target, features):
+    def __init__(self, *, train, test, features, target):
+        """Creates a new instance of type data"""
+        self.train_X = (train, features)
+        self.train_Y = (train, target)
+        self.test_X = (test, features)
+        self.test_Y = (test, target)
 
-        if not isinstance(train, pd.DataFrame):
-            raise TypeError("Train must be a pd.Dataframe.")
-        if not isinstance(test, pd.DataFrame):
-            raise TypeError("Test must be a pd.DataFrame.")
-        if features not in list(train.columns):
-            raise TypeError(f"{features} not found in pd.DataFrames.")
-        if target not in list(train.columns) or \
-            target not in list(test.columns):
-            raise ValueError(f"{target} column not found in pd.DataFrames.")
-
-        # TESTING PURPOSES USING ONLY TRAIN
-        # Test file are 'tweets strings' train are ['tokens', 'words']
-        self.train_X = train[features][:3000]
-        self.train_Y = train[target][:3000]
-        self.test_X = train[features][3000:4000]
-        self.test_Y = train[target][3000:4000]
-        # self.train_X = train[features]
-        # self.train_Y = train[target]
-        # self.test_X = test[features]
-        # self.test_Y = test[target]
+    def remove_nan(self, ds):
+        """Remove nan values from dataset"""
+        ds = ds.dropna()
+        return ds

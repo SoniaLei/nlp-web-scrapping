@@ -1,8 +1,8 @@
 """Experiment module to create, run and store experiments' artifacts."""
-from src.pipeline import Pipeline
-from src.context import Context
-from src.metrics import Metrics
-from src.data import Data
+from .pipeline import Pipeline
+from .context import Context
+from .metrics import Metrics
+from .data import Data
 import mlflow
 
 
@@ -10,7 +10,7 @@ class Experiment:
     """
     Experiment class that orchestrates the execution of an experiment.
     """
-
+    mlflow_uri_path = '$PROJECT_PATHS$/../../mlruns'
     def __init__(self, conf=None, data=None, pipeline=None):
         self.config = conf
         self.data = data
@@ -56,25 +56,31 @@ class Experiment:
     def pipeline(self, pipeline_conf):
         if pipeline_conf is None and self.config is None:
             raise ValueError("Pipeline object must be provided if conf parameter is None")
+
         if pipeline_conf is None and self.config is not None:
             self._pipeline = Pipeline(self.config.transformers,
                                       self.config.vectorizer,
                                       self.config.estimators).init()
-        if isinstance(pipeline_conf, Pipeline):
-            self._pipeline = pipeline_conf.init()  # init the pipeline
 
-    def run(self):
-        """I don;t like this method hardcoded the predict """
-        # PROB ***
+        if isinstance(pipeline_conf, Pipeline):
+            self._pipeline = pipeline_conf.init()
+
+    def run(self, probabilities=False):
         pipeline_fitted = self.pipeline.fit(self.data.train_X,
                                             self.data.train_Y)
-        # TODO diff size predicted prdict vs pred_proba
-        predicted = pipeline_fitted.predict(self.data.test_X)
+        classes_ = pipeline_fitted._pipeline.steps[-1][1].classes_ if probabilities else 'outcome'
+        func = pipeline_fitted.predict_proba if probabilities else pipeline_fitted.predict
+        predicted = func(self.data.test_X)
 
-        # Not sure a good idea
-        self.results = Metrics(self.name, self.data.test_Y, predicted)
+        self.results = Metrics(exp_name=self.name,
+                               classes=classes_,
+                               test_Y=self.data.test_Y,
+                               results=predicted)
+        return self
 
     def save_to_mlflow(self):
+        mlflow.set_tracking_uri(Experiment.mlflow_uri_path)
+        print(mlflow.get_tracking_uri())
         with mlflow.start_run(run_name=self.name):
             mlflow.log_param('file name', 'TESTTEST')
             mlflow.log_metric('accuracy', self.results.accuracy_score)
