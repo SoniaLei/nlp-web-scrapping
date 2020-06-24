@@ -31,7 +31,7 @@ def standardize_text(df, text_field):
     return df
 
 
-def expand_contractions(text, contraction_mapping=Contraction_Dictionary):
+def expand_contractions(text,contraction_mapping=Contraction_Dictionary):
 # This method expands all contractions to their original format
     
     contractions_pattern = re.compile('({})'.format('|'.join(contraction_mapping.keys())), 
@@ -47,6 +47,12 @@ def expand_contractions(text, contraction_mapping=Contraction_Dictionary):
     expanded_text = re.sub("'", "", expanded_text)
     return expanded_text
 
+#^ Asserts position at start of the string
+#( Denotes the start of a capturing group
+#  \d Numerical digit, 0, 1, 2, ... 9. Etc.
+#  {1,2} one to two times.
+#) You guessed it - Closes the group.
+#$ Assert position at end of the string
 
 def doubleLetterRemoval(string_object):
 	tokens = nltk.word_tokenize(string_object)
@@ -83,7 +89,6 @@ def lemma(string_object):
 	text = [lemmatizer.lemmatize(k[0], pos=PosMapper.get(k[1])) if k[1] in PosList else k[0] for k in posTupples]
 	return text
 
-### Replacing words with unambiguous antonyms by using WordNet.
 from nltk.corpus import wordnet as wn
 class word_antonym_replacer(object):
 
