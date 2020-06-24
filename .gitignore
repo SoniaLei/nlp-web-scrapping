@@ -1,5 +1,5 @@
 venv/
 .idea/
-data/glove.6B.50d.txt
+.vscode/
 .ipynb_checkpoints/
 __pycache__/
