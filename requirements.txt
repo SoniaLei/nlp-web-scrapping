@@ -5,3 +5,9 @@ nltk
 spacy
 yaml
 mlflow
+holoviews
+textblob
+wordcloud
+beautifulsoup4
+pytest
+pytest-cov
