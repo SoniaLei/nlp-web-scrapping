@@ -119,7 +119,7 @@ class MLFlow:
             Artifacts  - List (Optional)
     """
 
-    def MLFlow_Logging(self, params_dictionary, metrics_dictionary, artifact_filepaths = []):
+    def Logging(self, params_dictionary, metrics_dictionary, artifact_filepaths = []):
         
         print("Starting 'MLFlow_Logging()' ...")
                 
