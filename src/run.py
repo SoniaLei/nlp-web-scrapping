@@ -3,21 +3,21 @@ from mlpipeline.context import Context
 from mlpipeline.pipeline import Pipeline
 import pandas as pd
 
-#from mlflow import MLFlow
+from mlpipeline.mlfow import MLFlow
 
 if __name__ == '__main__':
 
     print("Starting ml pipeline program.")
 
     # AUTOMATIC APPROACH #######################################
-    config = Context(conf_file='./experiment_configs/experiment002.yml')
+    config = Context(conf_file='./experiment_configs/experiment001.yml')
     config = config.set_configuration_parameters()
     experiment = Experiment(config)
-    experiment.run()
+    experiment.run(probabilities=True)
     print(experiment.results.confusion_matrix)
     print(experiment.results.accuracy_score)
     #print(experiment.results.predictions)
-    
+    print("Starting MLFLOW ")
 # MLFlow??????
     mlflow = MLFlow(
         experiment_name = "Whatever is wanted for this run of the experiment",
