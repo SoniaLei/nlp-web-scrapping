@@ -50,7 +50,7 @@ class BasicMetrics:
     @prediction_labels.setter
     def prediction_labels(self, data):
         """sets the prediction labels attributes"""
-        if self.validate_results(data) and data.shape[1] > 1 and data.dtype == np.float:
+        if self.validate_results(data) and len(data.shape) > 1 and data.dtype == np.float:
             pred_class_nums = np.argmax(data, axis=1)
             class_names = list(enumerate(self._classes))
             prediction_class_names = list(map(lambda x: class_names[x][1], pred_class_nums))
@@ -66,7 +66,7 @@ class BasicMetrics:
 
     @prediction_probabilities.setter
     def prediction_probabilities(self, data):
-        if self.validate_results(data) and data.shape[1] > 1 and data.dtype == np.float:
+        if self.validate_results(data) and len(data.shape) > 1 and data.dtype == np.float:
             self._prediction_probabilities = data
         else:
             self._prediction_probabilities = None
