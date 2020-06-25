@@ -16,9 +16,9 @@ data_files:
 #   transformer2      short description what it does
 #   transformer3      short description what it does
 transformers:
-  # - Tokenizer:
-  #     to_lower: True
-  #     remove_stopwords: True
+  - Tokenizer:
+      to_lower: True
+      remove_stopwords: True
 
 
 # One vectorizer matching sklearn vectorizer name
