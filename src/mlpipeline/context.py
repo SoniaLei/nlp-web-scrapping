@@ -24,7 +24,7 @@ class Context:
     test = 'test'
     target = 'target'
     features = 'features'
-    data_key_files = {train, test}
+    data_key_files = {train, test, target, features}
 
     def __init__(self, exp_name=None, *, conf_file):
         """Sets default exp name if None is passed,
@@ -101,7 +101,7 @@ class Context:
             raise TypeError(f"Configuration file must be a dict \
                              found {type(data)} instead.")
         if Context.conf_keys - data.keys() != set():
-            raise ValueError(f"Missing {Context.conf_keys - data.keys()} "
+            raise KeyError(f"Missing {Context.conf_keys - data.keys()} "
                              f"compulsory keys in configuration file.")
 
         self.validate_set_data_files(data[Context.data_files])
@@ -130,8 +130,8 @@ class Context:
         if file_name is None or len(str(file_name).strip()) == 0:
             raise ValueError(f'{property_name} cannot be empty.')
         if 'csv' not in str(file_name).split("."):
-            raise TypeError(f"Train data must be a csv file with \
-                             .csv extension.")
+            raise TypeError(f"Train data must be a csv file with "
+                            f".csv extension.")
         df = pd.read_csv(file_name)
         setattr(self, property_name, df)
 
