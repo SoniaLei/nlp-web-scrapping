@@ -11,7 +11,7 @@ class Experiment:
     """
     
     #mlflow_uri_path = '$PROJECT_PATHS$/../../mlruns'
-    mlflow_uri_path = r'C:\Users\nathi_000\Desktop\Python Files\NLP Project\nlp-web-scrapping'
+    mlflow_uri_path = '/../../mlruns'
     
     def __init__(self, conf=None, data=None, pipeline=None):
         self.config = conf
@@ -97,7 +97,9 @@ class Experiment:
                        "Vectoriser": vectoriser,
                        "Transformer": transformer}
         
-        metrics_dict = {"Accuracy": self.results.accuracy_score}
+        accuracy = self.results.accuracy_score
+        
+        metrics_dict = {"Accuracy": accuracy}
                        #"F1": self.results.f1_score}
         
         mlflow.Logging(params_dictionary=params_dict,

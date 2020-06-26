@@ -24,12 +24,10 @@ class MLFlow:
 
     @property
     def experiment_name(self):
-        print("Getting 'experiment_name' ...")
         return self._experiment_name
     
     @experiment_name.setter
     def experiment_name(self, experiment_name):
-        print("Setting 'experiment_name' ...")
         self._experiment_name = experiment_name
         
 #-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-
@@ -39,12 +37,10 @@ class MLFlow:
     
     @property
     def tracking_uri(self):
-        print("Getting 'tracking_uri' ...")
         return self._tracking_uri
     
     @tracking_uri.setter
     def tracking_uri(self, tracking_uri):
-        print("Setting 'tracking_uri' ...")
         
         uri = ""
         
@@ -63,7 +59,7 @@ class MLFlow:
                 
                 # To set, uri needs "file:///" at the start
                 uri = "file:///" + str(tracking_uri)
-
+                
         self._tracking_uri = tracking_uri
         
         # Set mlflow tracking_uri
@@ -79,8 +75,6 @@ class MLFlow:
     """
 
     def Experiment_Id(self):
-        
-        print("Attaining 'experiment_id' ...")
         
         experiment_name = self.experiment_name
         
@@ -120,8 +114,6 @@ class MLFlow:
     """
 
     def Logging(self, params_dictionary, metrics_dictionary, artifact_filepaths = []):
-        
-        print("Starting 'MLFlow_Logging()' ...")
                 
         # Getting experiment_id
         experiment_id = self.Experiment_Id()
