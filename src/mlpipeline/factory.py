@@ -25,9 +25,4 @@ class ObjectFactory:
     def create_object(self, class_name, kargs=None):
         """Creates an instance of an estimator.
         """
-
         return ObjectFactory._registry[class_name](**kargs)
-
-        # if not kargs:
-        #     kargs = {}
-        

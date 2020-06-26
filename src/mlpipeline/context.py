@@ -16,9 +16,9 @@ class Context:
     # names used in configuration file as keys
     data_files = 'data_files'
     transformers = 'transformers'
-    vectorizer = 'vectorizer'
+    vectorizers = 'vectorizers'
     estimators = 'estimators'
-    conf_keys = {data_files, transformers, vectorizer, estimators}
+    conf_keys = {data_files, transformers, vectorizers, estimators}
     # names/keys used under data_files key
     train = 'train'
     test = 'test'
@@ -30,9 +30,7 @@ class Context:
         """Sets default exp name if None is passed,
         and stores conf filename.
         """
-        # check if name none # else provide default
-        if exp_name is None or len(str(exp_name).strip()) == 0:
-            exp_name = conf_file.split('.')[0]
+        exp_name = exp_name or conf_file.split('.')[-2]
         self.exp_name = exp_name
 
         self.conf_file = conf_file
@@ -52,13 +50,11 @@ class Context:
             raise ValueError("Experiment name must be string value.")
         if '/' in name:
             name = name.split('/')[-1]
-        # if Context.split not in name:
-        #     raise ValueError(f"File name must contain {Context.split} "
-        #                      f"for readability.")
 
         date_format = f'{Context.split}%Y{Context.split}%m{Context.split}%d'
         date = datetime.today().strftime(date_format)
-        self._exp_name = name + date
+        name_date = name + date
+        self._exp_name = name_date
 
     @property
     def conf_file(self):
@@ -83,7 +79,7 @@ class Context:
             file.close()
         return parsed_file
 
-    def set_configuration_parameters(self):
+    def validate_configuration_parameters(self):  # should I pass in file keys
         """If parameters are not validated, reads conf file, \
         validates parameters in conf.yml file and sets \
         them as instance properties.
@@ -100,6 +96,7 @@ class Context:
         if not isinstance(data, dict):
             raise TypeError(f"Configuration file must be a dict \
                              found {type(data)} instead.")
+
         if Context.conf_keys - data.keys() != set():
             raise KeyError(f"Missing {Context.conf_keys - data.keys()} "
                              f"compulsory keys in configuration file.")
@@ -108,6 +105,7 @@ class Context:
 
         factory = ObjectFactory()
         Context.conf_keys.remove(Context.data_files)
+
         for conf_key in Context.conf_keys:
             self.validate_set_parameters(data[conf_key], factory, conf_key)
 
@@ -116,11 +114,14 @@ class Context:
         if Context.data_key_files - data.keys() != set():
             raise ValueError(f"Missing {Context.data_key_files - data.keys()} "
                              f"keys under data_files from context file.")
+
         for key in data.keys():
-            if key in Context.data_key_files:  # if key not ['target', 'features']
+            if key == Context.train or key == Context.test:
                 file = data[key]
                 self.validate_and_set_csv(key, file)
             else:
+                if data[key] is None:
+                    raise ValueError(f"{key} cannot be empty.")
                 setattr(self, key, data[key])
 
     def validate_and_set_csv(self, property_name, file_name):
@@ -129,9 +130,11 @@ class Context:
         """
         if file_name is None or len(str(file_name).strip()) == 0:
             raise ValueError(f'{property_name} cannot be empty.')
+
         if 'csv' not in str(file_name).split("."):
             raise TypeError(f"Train data must be a csv file with "
                             f".csv extension.")
+
         df = pd.read_csv(file_name)
         setattr(self, property_name, df)
 
@@ -147,7 +150,7 @@ class Context:
         params_parsed = []
         for parameter in parameters:
             if not isinstance(parameter, dict):
-                raise TypeError(f"Parameter object: {parameter} must be of"
+                raise TypeError(f"Parameter object: {parameter} must be of "
                                 f"type dict found {type(parameter)} instead.")
             for param_name, param_values in parameter.items():
                 objectified_param = factory.create_object(param_name, param_values)
