@@ -1,0 +1,1 @@
+[('LogisticRegression', LogisticRegression(n_jobs=-1))], [('Word2VecVectorizer', Word2VecVectorizer(iter=None, size=None, window=None))], [('Tokenizer', Tokenizer(remove_stopwords=None, to_lower=None))]
