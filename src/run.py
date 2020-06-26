@@ -13,7 +13,7 @@ if __name__ == '__main__':
     experiment.run(probabilities=True)
     print(experiment.results.confusion_matrix)
     print(experiment.results.accuracy_score)
-    experiment.results.plot_confusion_matrix
+    #experiment.results.plot_confusion_matrix [NOT WORKING]
     print()
     experiment.save_to_mlflow()
     #print(experiment.results.predictions)
