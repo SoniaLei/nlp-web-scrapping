@@ -9,7 +9,7 @@ from itertools import cycle
 class BasicMetrics:
 
     def __init__(self, exp_name, classes, test_Y, results, output_path):
-        self._exp_name = exp_name
+        self._exp_name = str(exp_name)
         self._classes = classes
         self.test_Y = test_Y
         self.prediction_labels = results
@@ -39,7 +39,7 @@ class BasicMetrics:
 
         if not data.dtype == np.float \
                 and not data.dtype == np.object:
-            raise ValueError("Predictions must be a `np.ndarray` dtype float or str object.")
+            raise ValueError(f"Predictions must be a `np.ndarray` dtype float or str object got {data.dtype} instead.")
 
         return True
 
@@ -74,11 +74,12 @@ class BasicMetrics:
 
 class Metrics(BasicMetrics):
 
-    def __init__(self, exp_name, classes, test_Y, results, output_path='../data/results/'):
+    def __init__(self, exp_name, classes, test_Y, results, output_path='../data/results/',
+                 fpr=None, tpr=None, roc_auc=None):
         super().__init__(exp_name, classes, test_Y, results, output_path=output_path)
-        self._fpr = dict()
-        self._tpr = dict()
-        self._roc_auc = dict()
+        self._fpr = fpr or dict()
+        self._tpr = tpr or dict()
+        self._roc_auc = roc_auc or dict()
 
     @property
     def summary_report(self):
