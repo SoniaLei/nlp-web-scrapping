@@ -99,6 +99,31 @@ class Metrics(BasicMetrics):
     @property
     def confusion_matrix(self):
         return confusion_matrix(self.test_Y, self.prediction_labels)
+    
+    def plot_confusion_matrix(self):
+        cm = confusion_matrix(self.test_Y, self.prediction_labels)
+        
+        fig = plt.figure(figsize=[8,8])
+
+        ax = fig.add_subplot(111)
+        cax = ax.matshow(cm)
+
+        plt.title('Confusion Matrix of the Classifier\n')
+        fig.colorbar(cax)
+
+        ax.set_xticklabels([''] + labels)
+        ax.set_yticklabels([''] + labels)
+
+        plt.xlabel('Predicted')
+        plt.ylabel('True')
+
+        thresh = cm.max() / 2
+
+        for i,j in itertools.product(range(cm.shape[0]),range(cm.shape[1])):
+            plt.text(j,i,format(cm[i,j],'d'),horizontalalignment='center',color='white' if cm[i,j] < thresh else 'black', fontsize = 26)
+
+        plt.show()
+        print(cm)
 
     def dump_results_csv(self):
         data = pd.DataFrame({'test_Y': self.test_Y, 'Y_hat': self.prediction_labels})
