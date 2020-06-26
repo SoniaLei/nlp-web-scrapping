@@ -2,8 +2,7 @@ from mlpipeline.experiment import Experiment, Data
 from mlpipeline.context import Context
 from mlpipeline.pipeline import Pipeline
 import pandas as pd
-
-from mlpipeline.mlfow import MLFlow
+from mlpipeline.mlflow import MLFlow
 
 if __name__ == '__main__':
 
@@ -15,21 +14,9 @@ if __name__ == '__main__':
     experiment = Experiment(config)
     experiment.run(probabilities=True)
     print(experiment.results.confusion_matrix)
-    print(experiment.results.accuracy_score)
-    #print(experiment.results.predictions)
-    print("Starting MLFLOW ")
-# MLFlow??????
-    mlflow = MLFlow(
-        experiment_name = "Whatever is wanted for this run of the experiment",
-        tracking_uri = "Could probably be in .yml file"
-    )
-    
-    mlflow.Logging(
-        params_dictionary="Dictionary - need to reconfigure experiment results for this output",
-        metrics_dictionary="Dictionary - need to reconfigure experiment results for this output",
-        artifact_filepaths="List - Elia was changing to a temporary artifact system"
-    )    
-    
+    print(experiment.results.accuracy_score)    
+    experiment.save_to_mlflow()
+    #print(experiment.results.predictions)    
     print("SUCCESSFUL!!!!!")
     # END AUTOMATIC APPROACH ####################################
 
