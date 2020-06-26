@@ -3,6 +3,7 @@ from datetime import datetime
 import pandas as pd
 import pytest
 
+
 def test_context_name():
     # experiment name passed and used
     c = Context('ex_name', conf_file='$PROJECT_PATHS$/src/experiment_template.yml')
@@ -143,7 +144,7 @@ class TestSetConfigurationParams:
         c = Context('exp_name_param', conf_file=str(p))
         with pytest.raises(TypeError) as ex:
             c.set_configuration_parameters()
-        assert "train data must be a csv file with .csv extension." == str(ex.value)
+        assert "Train data must be a csv file with .csv extension." == str(ex.value)
 
 
     def test_data_files_keys_train_csv_format_file_no_exist(self, tmpdir):
@@ -166,7 +167,6 @@ class TestSetConfigurationParams:
         assert "[Errno 2] File tweets-train.csv does not exist: 'tweets-train.csv'" == str(ex.value)
 
 
-    # # TODO create a csv temp file
     # def test_data_files_keys_train_csv_format_file_does_exist(self, tmpdir):
     #     df = tempfile.NamedTemporaryFile('w')
     #     df.name = 'test.csv'
@@ -203,7 +203,7 @@ class TestSetConfigurationParams:
         c = Context('exp_name_param', conf_file=str(p))
         with pytest.raises(ValueError) as ex:
             c.set_configuration_parameters()
-        assert 'target cannot be empty.' == str(ex.value)
+            assert 'target cannot be empty.' == str(ex.value)
 
     def test_data_files_keys_features_empty(self, tmpdir):
         file = """
@@ -219,7 +219,7 @@ class TestSetConfigurationParams:
         p = tmpdir.mkdir("test").join("conf_file.yml")
         p.write(file)
         c = Context('exp_name_param', conf_file=str(p))
-        with pytest.raises(ValueError) as ex:
+        with pytest.raises(TypeError) as ex:
             c.set_configuration_parameters()
         assert 'features cannot be empty.' == str(ex.value)
         assert isinstance(c.target, str)
