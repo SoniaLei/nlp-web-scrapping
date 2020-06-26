@@ -13,19 +13,8 @@ if __name__ == '__main__':
     experiment.run(probabilities=True)
     print(experiment.results.confusion_matrix)
     print(experiment.results.accuracy_score)
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
->>>>>>> 773f3a44886705675fa08a35bdf3285266510887
+    experiment.results.plot_confusion_matrix
     print()
-    print("Confusion Matrix:")
-    experiment.results.plot_confusion_matrix #()
-    print()
-<<<<<<< HEAD
-=======
->>>>>>> f0f4236eb12359b1f6d8bb47f3554a702f035827
-=======
->>>>>>> 773f3a44886705675fa08a35bdf3285266510887
     experiment.save_to_mlflow()
     #print(experiment.results.predictions)
     print("SUCCESSFUL!!!!!")
