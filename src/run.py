@@ -1,8 +1,6 @@
-from mlpipeline.experiment import Experiment, Data
+from mlpipeline.experiment import Experiment
 from mlpipeline.context import Context
-from mlpipeline.pipeline import Pipeline
-import pandas as pd
-from mlpipeline.mlflow import MLFlow
+
 
 if __name__ == '__main__':
 
@@ -10,17 +8,20 @@ if __name__ == '__main__':
 
     # AUTOMATIC APPROACH #######################################
     config = Context(conf_file='./experiment_configs/experiment001.yml')
-    config = config.set_configuration_parameters()
+    config = config.validate_configuration_parameters()
     experiment = Experiment(config)
     experiment.run(probabilities=True)
     print(experiment.results.confusion_matrix)
     print(experiment.results.accuracy_score)
+<<<<<<< HEAD
     print()
     print("Confusion Matrix:")
     experiment.results.plot_confusion_matrix #()
     print()
+=======
+>>>>>>> f0f4236eb12359b1f6d8bb47f3554a702f035827
     experiment.save_to_mlflow()
-    #print(experiment.results.predictions)    
+    #print(experiment.results.predictions)
     print("SUCCESSFUL!!!!!")
     # END AUTOMATIC APPROACH ####################################
 

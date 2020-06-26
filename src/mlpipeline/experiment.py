@@ -61,7 +61,7 @@ class Experiment:
 
         if pipeline_conf is None and self.config is not None:
             self._pipeline = Pipeline(self.config.transformers,
-                                      self.config.vectorizer,
+                                      self.config.vectorizers,
                                       self.config.estimators).init()
 
         if isinstance(pipeline_conf, Pipeline):

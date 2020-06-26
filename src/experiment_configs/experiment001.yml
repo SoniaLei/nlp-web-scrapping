@@ -25,7 +25,7 @@ transformers:
 # To choose from:
 #   vectorizer1       short description what it does
 #   vectorizer2       short description what it does
-vectorizer:
+vectorizers:
   # - CountVectorizer:
   #     encoding: 'utf-8'
   #     lowercase: True

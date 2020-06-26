@@ -3,6 +3,7 @@ from datetime import datetime
 import pandas as pd
 import pytest
 
+
 def test_context_name():
     # experiment name passed and used
     c = Context('ex_name', conf_file='$PROJECT_PATHS$/src/experiment_template.yml')
@@ -19,18 +20,13 @@ def test_context_name():
         Context(exp_name=100, conf_file='$PROJECT_PATHS$/src/experiment_template.yml')
         assert ex == "Experiment name must be string value."
 
-    # exp_name not using _ scores
-    with pytest.raises(ValueError) as ex:
-        Context(exp_name='experiment-test', conf_file='$PROJECT_PATHS$/src/experiment_template.yml')
-        assert ex == "File name must contain _ for readability."
-
 
 def test_context_conf_file():
     c = Context(exp_name=None, conf_file='folder1/sub_folder/path_to_the_context.yml')
     assert c.conf_file == 'folder1/sub_folder/path_to_the_context.yml'
 
     # passing a non yml file
-    with pytest.raises(TypeError) as ex:
+    with pytest.raises(ValueError) as ex:
         Context(exp_name=None, conf_file='folder1/sub_folder/path_to_the_context.csv')
         assert ex == 'Configuration file must be a yml file'
 
@@ -89,8 +85,8 @@ class TestSetConfigurationParams:
         p.write(file)
         c = Context('exp_name_param', conf_file=str(p))
 
-        with pytest.raises(ValueError) as ex:
-            c.set_configuration_parameters()
+        with pytest.raises(KeyError) as ex:
+            c.validate_configuration_parameters()
             assert ex == "Missing {'estimators', 'vectorizer'} compulsory keys in configuration file."
 
     def test_data_files_keys(self, tmpdir):
@@ -100,13 +96,13 @@ class TestSetConfigurationParams:
                     test: 'tweets-test.csv'
                 transformers:
                 estimators:
-                vectorizer:
+                vectorizers:
                 """
         p = tmpdir.mkdir("test").join("conf_file.yml")
         p.write(file)
         c = Context('exp_name_param', conf_file=str(p))
         with pytest.raises(ValueError) as ex:
-            c.set_configuration_parameters()
+            c.validate_configuration_parameters()
             assert ex == "Missing {'target', 'features'} keys under data_files from context file."
 
     def test_data_files_keys_train_test(self, tmpdir):
@@ -118,13 +114,13 @@ class TestSetConfigurationParams:
                     features: 
                 transformers:
                 estimators:
-                vectorizer:
+                vectorizers:
                 """
         p = tmpdir.mkdir("test").join("conf_file.yml")
         p.write(file)
         c = Context('exp_name_param', conf_file=str(p))
         with pytest.raises(ValueError) as ex:
-            c.set_configuration_parameters()
+            c.validate_configuration_parameters()
         assert "train cannot be empty." == str(ex.value)
 
     def test_data_files_keys_train_csv_format(self, tmpdir):
@@ -136,14 +132,14 @@ class TestSetConfigurationParams:
                     features: 
                 transformers:
                 estimators:
-                vectorizer:
+                vectorizers:
                 """
         p = tmpdir.mkdir("test").join("conf_file.yml")
         p.write(file)
         c = Context('exp_name_param', conf_file=str(p))
         with pytest.raises(TypeError) as ex:
-            c.set_configuration_parameters()
-        assert "train data must be a csv file with .csv extension." == str(ex.value)
+            c.validate_configuration_parameters()
+        assert "Train data must be a csv file with .csv extension." == str(ex.value)
 
 
     def test_data_files_keys_train_csv_format_file_no_exist(self, tmpdir):
@@ -155,18 +151,17 @@ class TestSetConfigurationParams:
                     features: 
                 transformers:
                 estimators:
-                vectorizer:
+                vectorizers:
                 """
         p = tmpdir.mkdir("test").join("conf_file.yml")
         p.write(file)
         c = Context('exp_name_param', conf_file=str(p))
         with pytest.raises(FileNotFoundError) as ex:
-            c.set_configuration_parameters()
+            c.validate_configuration_parameters()
 
         assert "[Errno 2] File tweets-train.csv does not exist: 'tweets-train.csv'" == str(ex.value)
 
 
-    # # TODO create a csv temp file
     # def test_data_files_keys_train_csv_format_file_does_exist(self, tmpdir):
     #     df = tempfile.NamedTemporaryFile('w')
     #     df.name = 'test.csv'
@@ -196,14 +191,14 @@ class TestSetConfigurationParams:
                     features:
                 transformers:
                 estimators:
-                vectorizer:
+                vectorizers:
                 """
         p = tmpdir.mkdir("test").join("conf_file.yml")
         p.write(file)
         c = Context('exp_name_param', conf_file=str(p))
         with pytest.raises(ValueError) as ex:
-            c.set_configuration_parameters()
-        assert 'target cannot be empty.' == str(ex.value)
+            c.validate_configuration_parameters()
+            assert 'target cannot be empty.' == str(ex.value)
 
     def test_data_files_keys_features_empty(self, tmpdir):
         file = """
@@ -214,13 +209,13 @@ class TestSetConfigurationParams:
                     features: 
                 transformers:
                 estimators:
-                vectorizer:
+                vectorizers:
                 """
         p = tmpdir.mkdir("test").join("conf_file.yml")
         p.write(file)
         c = Context('exp_name_param', conf_file=str(p))
         with pytest.raises(ValueError) as ex:
-            c.set_configuration_parameters()
+            c.validate_configuration_parameters()
         assert 'features cannot be empty.' == str(ex.value)
         assert isinstance(c.target, str)
         assert isinstance(c.train, pd.DataFrame)
@@ -229,61 +224,18 @@ class TestSetConfigurationParams:
 
     def test_data_files_key_transformers(self, tmpdir):
         file = """
-                   data_files:
-                       train: '$PROJECT_PATHS$/../data/raw/tweets-train.csv'
-                       test: '$PROJECT_PATHS$/../data/raw/tweets-train.csv'
-                       target: 'target_name'
-                       features: 'features_name'
-                   transformers:
-                   estimators:
-                   vectorizer:
-                   """
+               data_files:
+                   train: '$PROJECT_PATHS$/../data/raw/tweets-train.csv'
+                   test: '$PROJECT_PATHS$/../data/raw/tweets-train.csv'
+                   target: 'target_name'
+                   features: 'features_name'
+               transformers:
+               estimators:
+               vectorizers:
+                """
         p = tmpdir.mkdir("test").join("conf_file.yml")
         p.write(file)
         c = Context('exp_name_param', conf_file=str(p))
         with pytest.raises(TypeError) as ex:
-            c.set_configuration_parameters()
-        assert " from config file expected to be a list got " in str(ex.value)
-
-    def test_data_files_key_transformers(self, tmpdir):
-        file = """
-                   data_files:
-                       train: '$PROJECT_PATHS$/../data/raw/tweets-train.csv'
-                       test: '$PROJECT_PATHS$/../data/raw/tweets-train.csv'
-                       target: 'target_name'
-                       features: 'features_name'
-                   transformers:
-                     - StopWordsRemoval:
-                   estimators:
-                     - s
-                   vectorizer:
-                     - CountVectorizer:
-                   """
-        p = tmpdir.mkdir("test").join("conf_file.yml")
-        p.write(file)
-        c = Context('exp_name_param', conf_file=str(p))
-        with pytest.raises(TypeError) as ex:
-            c.set_configuration_parameters()
-        assert "Parameter object: s must be of type dict " \
-               "found <class 'str'> instead." == str(ex.value)
-
-
-    def test_data_files_key_error_factory_object(self, tmpdir):
-        file = """
-                   data_files:
-                       train: '$PROJECT_PATHS$/../data/raw/tweets-train.csv'
-                       test: '$PROJECT_PATHS$/../data/raw/tweets-train.csv'
-                       target: 'target_name'
-                       features: 'features_name'
-                   transformers:
-                     - StopWordsRemoval:
-                   estimators:
-                     - s:
-                   vectorizer:
-                     - CountVectorizer:
-                   """
-        p = tmpdir.mkdir("test").join("conf_file.yml")
-        p.write(file)
-        c = Context('exp_name_param', conf_file=str(p))
-        with pytest.raises(KeyError) as ex:
-            c.set_configuration_parameters()
+            c.validate_configuration_parameters()
+            assert "from config file expected to be a list got" in str(ex.value)
