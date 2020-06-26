@@ -13,6 +13,10 @@ if __name__ == '__main__':
     experiment.run(probabilities=True)
     print(experiment.results.confusion_matrix)
     print(experiment.results.accuracy_score)
+    print()
+    print("Confusion Matrix:")
+    experiment.results.plot_confusion_matrix #()
+    print()
     experiment.save_to_mlflow()
     #print(experiment.results.predictions)
     print("SUCCESSFUL!!!!!")
@@ -99,4 +103,3 @@ if __name__ == '__main__':
     print(type(experiment.pipeline))  # Pipeline class
     experiment.pipeline.init()
     print(type(experiment.pipeline._pipeline))  # SKLEARN PIPELINE"""
-
