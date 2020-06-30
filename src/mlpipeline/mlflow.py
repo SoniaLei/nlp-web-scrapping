@@ -1,6 +1,5 @@
 # Imports
 import mlflow
-from urllib.parse import urlparse
 import mlflow.sklearn
 
 #-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-
@@ -63,7 +62,7 @@ class MLFlow:
         self._tracking_uri = tracking_uri
         
         # Set mlflow tracking_uri
-        mlflow.set_tracking_uri(uri)
+        mlflow.set_tracking_uri(self._tracking_uri)
 
 #-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-
     
