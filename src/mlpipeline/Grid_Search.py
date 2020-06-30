@@ -2,7 +2,7 @@
 import sklearn
 from sklearn.model_selection import GridSearchCV
 from sklearn.pipeline import Pipeline
-import NLP_Functions as Func
+import re
 
 #-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-
 
@@ -124,6 +124,30 @@ class Grid_Search:
     def scoring_keys(self):
         
         print(sklearn.metrics.SCORERS.keys())
+        
+#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-
+
+# Shortens the name of permutations - easier to read
+        
+    def Names_GridSearch(self, tuned_parameters={}): #, model):
+        
+        values_list = []
+
+        parameters_list = [parameter for parameter in tuned_parameters.keys()]
+        
+        params_to_print = [parameter.split("__")[-1] for parameter in parameters_list]
+
+        for parameter, param in zip(parameters_list, params_to_print):
+
+            match = re.search("classifier", param)
+            
+            value = str(param) + ": " + str(tuned_parameters[parameter]).split("(")[0].strip()
+
+            values_list.append(value)
+
+        best_params = ", ".join(value for value in values_list)
+
+        return best_params
 
 #-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-
     
@@ -219,7 +243,9 @@ class Grid_Search:
         
         for mean, std, param in zip(means, stds, params):
             
-            score = str("%0.3f (+/-%0.03f) for %r" % (mean, std * 2, Func.Names_GridSearch(parameters, param)))
+            score = str("%0.3f (+/-%0.03f) for %r" %
+                        (mean, std * 2,
+                         self.Names_GridSearch(tuned_parameters=param)))
                         
             scores.append(score)
             

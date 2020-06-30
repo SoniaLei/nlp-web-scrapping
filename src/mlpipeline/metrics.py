@@ -1,4 +1,3 @@
-"""Module Metrics containing functionality to gauge the effectively/performance of an ml classifier model."""
 from sklearn.metrics import accuracy_score, classification_report, confusion_matrix, f1_score, auc, roc_curve
 from sklearn.preprocessing import LabelBinarizer
 import pandas as pd
