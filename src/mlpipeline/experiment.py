@@ -4,14 +4,14 @@ from .context import Context
 from .metrics import Metrics
 from .data import Data
 from .mlflow import MLFlow
+import os
 
 class Experiment:
     """
     Experiment class that orchestrates the execution of an experiment.
     """
     
-    #mlflow_uri_path = '$PROJECT_PATHS$/../../mlruns'
-    mlflow_uri_path = '/../../mlruns'
+    mlflow_uri_path = '$PROJECT_PATHS$/../../mlruns'
     
     def __init__(self, conf=None, data=None, pipeline=None):
         self.config = conf
@@ -83,11 +83,10 @@ class Experiment:
         
         return self
 
-    def save_to_mlflow(self, uri_path=mlflow_uri_path):
-        print("In 'save_to_mlflow' ...")
+    def save_to_mlflow(self):
         
         mlflow = MLFlow(experiment_name=self.name,
-                        tracking_uri=uri_path)
+                        tracking_uri=self.mlflow_uri_path)
         
         estimator = str(self.pipeline.estimators).split(",")[1][:-2]
         vectoriser = str(self.pipeline.vectorizers).split("'")[2][2:-2]
