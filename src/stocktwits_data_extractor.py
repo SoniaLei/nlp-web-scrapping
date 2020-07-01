@@ -1,7 +1,11 @@
 import pandas as pd
+import time
 from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
 from bs4 import BeautifulSoup
+
+users = []
+contents = []
 
 #Target company symbol (e.g. AAPL for Apple Inc.)
 target = 'SPY'
@@ -21,8 +25,12 @@ driver.get('https://stocktwits.com/symbol/'+target)
 # driver.get("https://stocktwits.com/")
 
 #Accept cookies
+print('going to sleep')
+time.sleep(15)
+print('awake')
 element = driver.find_element_by_id('onetrust-accept-btn-handler')
 element.send_keys(Keys.ENTER)
+print('cookies eaten')
 
 # #Select 'Log in' button
 # element = driver.find_element_by_xpath('/html/body/div[2]/div/div/div[1]/nav/div[3]/div/div/div[1]/button')
@@ -41,16 +49,34 @@ element.send_keys(Keys.ENTER)
 
 content = driver.page_source
 soup = BeautifulSoup(content, features="html.parser")
+print('got soup')
 
 #Find all tweets
 findAllInSoup = soup.find_all(attrs={'class':'st_VgdfbpJ st_31oNG-n st_3A22T1e st_vmBJz6-'})
 
 for a in findAllInSoup:
-
     userDiv = a.find('a', attrs={'class':'st_x9n-9YN st_2LcBLI2 st_1vC-yaI st_1VMMH6S'})
     user = userDiv.find('span').get_text()
     print(user)
+    users.append(user)
+
     content = a.find('div', attrs={'class':'st_3SL2gug'}).get_text()
     print(content)
+    contents.append(contents)
+
+driver.quit()
+print('driver quit')
+
+Table = {
+        'User': users,
+        'Tweet Contents': contents
+        }
+print('table laid')
+df = pd.DataFrame(Table)
+
+#df = pd.DataFrame({'User':users,'Tweet Contents':contents})
+print('df written')
+df.to_csv('tweets.csv', index=False, encoding='utf-8')
+print('tweets.csv written')
 
 input('Press ENTER to exit')
