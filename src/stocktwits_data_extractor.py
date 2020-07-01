@@ -40,8 +40,17 @@ element.send_keys(Keys.ENTER)
 # # element.send_keys(target, Keys.ENTER)
 
 content = driver.page_source
-soup = BeautifulSoup(content)
+soup = BeautifulSoup(content, features="html.parser")
 
-findAllInSoup = soup.find_all(attrs={'class':'st_3SL2gug'})
-#print('soup')
+#Find all tweets
+findAllInSoup = soup.find_all(attrs={'class':'st_VgdfbpJ st_31oNG-n st_3A22T1e st_vmBJz6-'})
+
+for a in findAllInSoup:
+
+    userDiv = a.find('a', attrs={'class':'st_x9n-9YN st_2LcBLI2 st_1vC-yaI st_1VMMH6S'})
+    user = userDiv.find('span').get_text()
+    print(user)
+    content = a.find('div', attrs={'class':'st_3SL2gug'}).get_text()
+    print(content)
+
 input('Press ENTER to exit')
