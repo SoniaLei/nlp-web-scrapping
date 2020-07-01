@@ -47,22 +47,52 @@ print('cookies eaten')
 # print(element.text)
 # # element.send_keys(target, Keys.ENTER)
 
+# #infinite scroll may work for powerful PCs, but doesn't seem to be an option here
+# #page down
+# no_of_pagedowns = 20
+# while no_of_pagedowns:
+#     element.send_keys(Keys.PAGE_DOWN)
+#     time.sleep(0.5)
+#     no_of_pagedowns-=1
+#     print('scrolling... ',no_of_pagedowns, ' to go')
+
 content = driver.page_source
 soup = BeautifulSoup(content, features="html.parser")
 print('got soup')
 
-#Find all tweets
-findAllInSoup = soup.find_all(attrs={'class':'st_VgdfbpJ st_31oNG-n st_3A22T1e st_vmBJz6-'})
+#refresh technique
+no_of_refreshes = 5
+while no_of_refreshes > 0:
+    findAllInSoup = soup.find_all(attrs={'class':'st_VgdfbpJ st_31oNG-n st_3A22T1e st_vmBJz6-'})
 
-for a in findAllInSoup:
-    userDiv = a.find('a', attrs={'class':'st_x9n-9YN st_2LcBLI2 st_1vC-yaI st_1VMMH6S'})
-    user = userDiv.find('span').get_text()
-    print(user)
-    users.append(user)
+    for a in findAllInSoup:
+        userDiv = a.find('a', attrs={'class':'st_x9n-9YN st_2LcBLI2 st_1vC-yaI st_1VMMH6S'})
+        user = userDiv.find('span').get_text()
+        print(user)
+        users.append(user)
 
-    content = a.find('div', attrs={'class':'st_3SL2gug'}).get_text()
-    print(content)
-    contents.append(content)
+        content = a.find('div', attrs={'class':'st_3SL2gug'}).get_text()
+        print(content)
+        contents.append(content)
+
+    time.sleep(20)
+    driver.refresh()
+    print('refreshing...', no_of_refreshes, 'to go')
+    time.sleep(5)
+    no_of_refreshes -=1
+
+# #Find all tweets
+# findAllInSoup = soup.find_all(attrs={'class':'st_VgdfbpJ st_31oNG-n st_3A22T1e st_vmBJz6-'})
+#
+# for a in findAllInSoup:
+#     userDiv = a.find('a', attrs={'class':'st_x9n-9YN st_2LcBLI2 st_1vC-yaI st_1VMMH6S'})
+#     user = userDiv.find('span').get_text()
+#     print(user)
+#     users.append(user)
+#
+#     content = a.find('div', attrs={'class':'st_3SL2gug'}).get_text()
+#     print(content)
+#     contents.append(content)
 
 driver.quit()
 print('driver quit')
