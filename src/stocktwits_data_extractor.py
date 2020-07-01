@@ -62,7 +62,7 @@ for a in findAllInSoup:
 
     content = a.find('div', attrs={'class':'st_3SL2gug'}).get_text()
     print(content)
-    contents.append(contents)
+    contents.append(content)
 
 driver.quit()
 print('driver quit')
@@ -72,11 +72,13 @@ Table = {
         'Tweet Contents': contents
         }
 print('table laid')
+print(Table)
 df = pd.DataFrame(Table)
 
 #df = pd.DataFrame({'User':users,'Tweet Contents':contents})
 print('df written')
 df.to_csv('tweets.csv', index=False, encoding='utf-8')
 print('tweets.csv written')
+
 
 input('Press ENTER to exit')
