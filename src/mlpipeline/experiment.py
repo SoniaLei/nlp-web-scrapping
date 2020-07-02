@@ -10,14 +10,7 @@ class Experiment:
     Experiment class that orchestrates the execution of an experiment.
     """
     
-    #mlflow_uri_path = '$PROJECT_PATHS$/../mlruns'
-    mlflow_uri_path = '$PROJECT_PATHS$'
-    """
-    mlflow_uri_path = r'./../../mlruns'
-    mlflow_uri_path = r'../../mlruns'
-    """    
-    #mlflow_uri_path = r'../mlruns'
-    #mlflow_uri_path = r'./../mlruns'
+    mlflow_uri_path = '$PROJECT_PATHS$/../../mlruns'
     
     def __init__(self, conf=None, data=None, pipeline=None):
         self.config = conf
