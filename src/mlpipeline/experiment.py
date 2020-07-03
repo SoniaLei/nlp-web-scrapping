@@ -4,6 +4,7 @@ from .context import Context
 from .metrics import Metrics
 from .data import Data
 from .mlflow import MLFlow
+import tempfile
 
 class Experiment:
     """
@@ -11,7 +12,7 @@ class Experiment:
     """
     
     mlflow_uri_path = '$PROJECT_PATHS$/../../mlruns'
-    
+        
     def __init__(self, conf=None, data=None, pipeline=None):
         self.config = conf
         self.data = data
@@ -81,19 +82,10 @@ class Experiment:
                                results=predicted)
         
         return self
-
-    def save_to_mlflow(self, uri_path=mlflow_uri_path):
+    
+    def parameters_dictionary(self):
         
-        print("In 'save_to_mlflow' ...")
-        
-        print()
-        print("Sent uri_path" + str(uri_path))
-        print()
-        
-        mlflow = MLFlow(experiment_name=self.name,
-                        tracking_uri=uri_path)
-        
-        estimator = str(self.pipeline.estimators).split(",")[1][:-2]
+        estimator = ",".join(str(self.pipeline.estimators).split(",")[1:])[:-2]
         vectoriser = str(self.pipeline.vectorizers).split("'")[2][2:-2]
         transformer = str(self.pipeline.transformers).split("'")[2][2:-2]
         
@@ -101,12 +93,57 @@ class Experiment:
                        "Vectoriser": vectoriser,
                        "Transformer": transformer}
         
-        accuracy = self.results.accuracy_score
+        return params_dict
+    
+    def metrics_dictionary(self, accuracy=True, precision=True, recall=True, f1=True):
         
-        metrics_dict = {"Accuracy": accuracy}
-                       #"F1": self.results.f1_score}
+        metrics_dict = {}
         
+        if accuracy:
+            metrics_dict['accuracy'] = self.results.accuracy_score
+            
+        if precision:
+            metrics_dict['precision'] = self.results.precision_score
+            
+        if recall:
+            metrics_dict['recall'] = self.results.recall_score
+            
+        if f1:
+            metrics_dict['f1_score'] = self.results.f1_score
+            
+        return metrics_dict
+    
+    def artifact_list(self, confusion_matrix=True, roc_curve=True):
+        
+        artifact_list = []
+        
+        if confusion_matrix:
+            artifact_list.append(self.results.plot_confusion_matrix())
+            
+        if roc_curve:
+            artifact_list.append(self.results.plot_classes_roc())
+            
+        return artifact_list            
+
+    def save_to_mlflow(self, uri_path=mlflow_uri_path,
+                       accuracy=True, precision=True, recall=True, f1=True,
+                       confusion_matrix=True, roc_curve=True):
+        
+        mlflow = MLFlow(experiment_name=self.name,
+                        tracking_uri=uri_path)
+        
+        # Parameters        
+        params_dict = self.parameters_dictionary()
+        
+        # Metrics        
+        metrics_dict = self.metrics_dictionary(accuracy=accuracy, precision=precision, recall=recall, f1=f1)
+          
+        # Artifacts        
+        artifact_list = self.artifact_list(confusion_matrix=confusion_matrix, roc_curve=roc_curve)
+
+        # Logging        
         mlflow.Logging(params_dictionary=params_dict,
-                      metrics_dictionary=metrics_dict)
+                      metrics_dictionary=metrics_dict,
+                      artifact_filepaths=artifact_list)
         
         print("Parameters, Metrics and Artifacts logged!")

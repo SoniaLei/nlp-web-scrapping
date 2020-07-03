@@ -1,4 +1,4 @@
-from sklearn.metrics import accuracy_score, classification_report, confusion_matrix, f1_score, auc, roc_curve
+from sklearn.metrics import accuracy_score, f1_score, precision_score, recall_score, classification_report, confusion_matrix, auc, roc_curve
 from sklearn.preprocessing import LabelBinarizer
 import pandas as pd
 import numpy as np
@@ -85,8 +85,17 @@ class Metrics(BasicMetrics):
     def summary_report(self):
         return NotImplemented
 
+    @property
     def f1_score(self, average='weighted'):
         return f1_score(self.test_Y, self.prediction_labels, average=average)
+    
+    @property
+    def precision_score(self, average='weighted'):
+        return precision_score(self.test_Y, self.prediction_labels, average=average)
+    
+    @property
+    def recall_score(self, average='weighted'):
+        return recall_score(self.test_Y, self.prediction_labels, average=average)
 
     @property
     def accuracy_score(self):

@@ -2,6 +2,8 @@
 import mlflow
 from urllib.parse import urlparse
 import mlflow.sklearn
+from tempfile import NamedTemporaryFile
+import os
 
 #-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-
 
@@ -28,7 +30,12 @@ class MLFlow:
     
     @experiment_name.setter
     def experiment_name(self, experiment_name):
-        self._experiment_name = experiment_name
+        
+        if isinstance(experiment_name, str):
+            self._experiment_name = experiment_name
+            
+        else:
+            raise TypeError("Input needs to be a String")
         
 #-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-
 
@@ -123,6 +130,29 @@ class MLFlow:
     
 #-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-
     """
+    Using TemporaryFiles to log figures/artifacts
+        Input:
+            Artifact - figure (usually matplotlib)
+    """
+    
+    def LogArtifact_TempFile(self, artifact):
+        
+        tmpfile = NamedTemporaryFile(
+            delete=False,
+            prefix="artifact_",
+            suffix=".png"
+        )
+
+        artifact.savefig(tmpfile)
+
+        tmpfile.close()
+        
+        mlflow.log_artifact(tmpfile.name)
+
+        os.remove(tmpfile.name)
+        
+#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-
+    """
     Logging to mlflow():
         Inputs:
             Parameters - Dictionary
@@ -149,23 +179,10 @@ class MLFlow:
                 mlflow.log_metric(key, metrics_dictionary[key])
                 
             # Figures / Artifacts            
-            if isinstance(artifact_filepaths, list): 
-                for filepath in artifact_filepaths:
-
-                    try:
-
-                        mlflow.log_artifact(filepath)
-
-                    except FileNotFoundError:
-
-                        print("Unable to upload artifact")
-                        print("-- File not found --")
-
-            elif isinstance(artifact_filepaths, str):
+            for artifact in artifact_filepaths:
                 
                 try:
-                    
-                    mlflow.log_artifact(artifact_filepaths)
+                    self.LogArtifact_TempFile(artifact)
                     
                 except FileNotFoundError:
                     
