@@ -1,103 +1,43 @@
-from mlpipeline.experiment import Experiment
-from mlpipeline.context import Context
+from mlpipeline import read_config_file, Context, Experiment
+import argparse
+import sys
+import os
+
+def get_parser_args():
+    """
+    Creates a new argument parser and returns the arguments being passed.
+    """
+    parser = argparse.ArgumentParser(description='Machine Learning [NLP] Pipeline outputting ml Metrics in MLFlow.')
+    parser.add_argument('-cf', '--config', '--configname',
+                        help='Experiment configuration file path', type=str, required=True, dest='config_file')
+    parser.add_argument('-n', '--name',
+                        help='Experiment name used to experiment artifacts', type=str, required=False, dest='file_name')
+    args = parser.parse_args(sys.argv[1:])
+    return args
 
 
-if __name__ == '__main__':
+def main():
+    """
+    Orchestrates the whole ml program.
+    """
+    args = get_parser_args()
+
+    if not os.path.exists(args.config_file):
+        raise FileNotFoundError(f"{args.config_file} is not found in the root filesystem.")
 
     print("Starting ml pipeline program.")
 
-    # AUTOMATIC APPROACH #######################################
-    config = Context(conf_file='./experiment_configs/experiment001.yml')
-    config = config.validate_configuration_parameters()
+    config_context = Context(exp_name=args.file_name, conf_file=args.config_file)
+    config = config_context.validate_configuration_parameters()
     experiment = Experiment(config)
     experiment.run(probabilities=True)
-    print(experiment.results.confusion_matrix)
-    print(experiment.results.accuracy_score)
-    #experiment.results.plot_confusion_matrix [NOT WORKING]
-    print()
-    experiment.save_to_mlflow()
-    #print(experiment.results.predictions)
+    # print(experiment.results.confusion_matrix)
+    # print(experiment.results.accuracy_score)
+    # experiment.results.plot_confusion_matrix
+    # experiment.save_to_mlflow()
+    # print(experiment.results.predictions)
     print("SUCCESSFUL!!!!!")
-    # END AUTOMATIC APPROACH ####################################
-
-    # context params
-    """print(config.exp_name)
-    print(config.conf_file)
-    print(config.train)
-    print(config.test)
-    print(config.target)
-    print(config.features)
-    print(config.vectorizer)
-    print(config.estimators)
-    print(config.transformers)
-    print(" ")
 
 
-    # experiment params
-    print(experiment.name)  # returns experiment.config.exp_name
-    print(experiment.config)  # Context object with all params from yaml
-    print(experiment.data)  # Data object from conf.params
-    print(experiment.data.train_X)
-    print(experiment.data.train_Y)
-    print(experiment.data.test_Y)
-    print(experiment.data.test_Y)
-    print(experiment.pipeline)  # Pipeline Object from yaml
-    print(experiment.pipeline.transformers)
-    print(experiment.pipeline.vectorizers)
-    print(experiment.pipeline.estimators)
-    print(" ")
-
-    # Experiment.results params
-    print(experiment.results.accuracy_score)
-    print(experiment.results.classification_report)
-    print(experiment.results.confusion_matrix)
-    experiment.results.dump_results_csv()
-    experiment.save_to_mlflow()
-    print(" ")
-
-
-
-    # NOT AUTOMATIC APROACH  #######################################
-    # MODULARITY USING CLASSES AS WE PLEASE
-
-    # Instantiating Data without context using cleaned data since Transformers not implemented
-    df_train = pd.read_csv("../data/processed/cleanedDataV1.csv")
-    df_test = pd.read_csv("../data/processed/cleanedDataV1.csv")
-    target = 'sentiment'
-    features = 'text'
-    d = Data(train=df_train,
-             test=df_test,
-             target=target,
-             features=features)
-    print(d)
-
-    # Instantiating Pipeline without context
-    class Test:
-        def fit(self):
-            pass
-        def transform(self):
-            pass
-    class VectTest:
-        def fit(self):
-            pass
-        def transform(self):
-            pass
-    class EstimatorTest:
-        def fit(self):
-            pass
-
-    t = [('t1', Test()), ('t1', Test())]
-    v = [('vec', VectTest()), ('vec', VectTest())]
-    e = [('est', EstimatorTest()), ('est', EstimatorTest())]
-    p = Pipeline(t, v, e).init()
-    print(p)
-
-    print(p._pipeline) # SKLEARN PIPELINE
-
-    # Instanciating Experiment:
-    experiment = Experiment(data=d, pipeline=p)
-    print(experiment)
-    print(experiment.pipeline)
-    print(type(experiment.pipeline))  # Pipeline class
-    experiment.pipeline.init()
-    print(type(experiment.pipeline._pipeline))  # SKLEARN PIPELINE"""
+if __name__ == '__main__':
+    main()
