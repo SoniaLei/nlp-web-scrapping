@@ -10,8 +10,7 @@ class Experiment:
     Experiment class that orchestrates the execution of an experiment.
     """
     
-    #mlflow_uri_path = '$PROJECT_PATHS$/../../mlruns'
-    mlflow_uri_path = '/../../mlruns'
+    mlflow_uri_path = '$PROJECT_PATHS$/../../mlruns'
     
     def __init__(self, conf=None, data=None, pipeline=None):
         self.config = conf
@@ -84,7 +83,12 @@ class Experiment:
         return self
 
     def save_to_mlflow(self, uri_path=mlflow_uri_path):
+        
         print("In 'save_to_mlflow' ...")
+        
+        print()
+        print("Sent uri_path" + str(uri_path))
+        print()
         
         mlflow = MLFlow(experiment_name=self.name,
                         tracking_uri=uri_path)
