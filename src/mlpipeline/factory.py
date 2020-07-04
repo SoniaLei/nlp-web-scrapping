@@ -18,11 +18,18 @@ class ObjectFactory:
         'Word2VecVectorizer': Word2VecVectorizer,
         'SVC': SVC,
         'LogisticRegression': LogisticRegression,
-        'Tokenizer': Tokenizer
+        'Tokenizer': Tokenizer,
+        'TweetVectorizer': TweetVectorizer,
     }
 
     @classmethod
-    def create_object(self, class_name, kargs=None):
+    def create_object(self, class_name, kwargs=None):
         """Creates an instance of an estimator.
         """
-        return ObjectFactory._registry[class_name](**kargs)
+        kwargs = kwargs or {}
+        obj = ObjectFactory._registry.get(class_name, None)
+        if obj is None:
+            raise KeyError(f"Object {class_name} is not found in "
+                           f"registry. Available options are:"
+                           f"{list(ObjectFactory._registry.keys())}")
+        return obj(**kwargs)
