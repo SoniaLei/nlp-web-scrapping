@@ -1,5 +1,5 @@
 from .word2vec_vectorizer import Word2VecVectorizer
-from .base_transformers import StopWordsRemoval, Lematization, TweetCleaner
+from .base_transformers import StopWordsRemoval, Lematization, TweetCleaner, TweetVectorizer
 from .tokenizer import Tokenizer
 
 __all__ = [
@@ -7,5 +7,6 @@ __all__ = [
     'StopWordsRemoval',
     'Lematization',
     'TweetCleaner',
-    'Tokenizer'
+    'Tokenizer',
+    'TweetVectorizer'
 ]
