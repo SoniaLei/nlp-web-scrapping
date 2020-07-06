@@ -2,6 +2,8 @@
 import mlflow
 from urllib.parse import urlparse
 import mlflow.sklearn
+from tempfile import NamedTemporaryFile
+import os
 
 #-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-
 
@@ -28,7 +30,12 @@ class MLFlow:
     
     @experiment_name.setter
     def experiment_name(self, experiment_name):
-        self._experiment_name = experiment_name
+        
+        if isinstance(experiment_name, str):
+            self._experiment_name = experiment_name
+            
+        else:
+            raise TypeError("Input needs to be a String")
         
 #-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-
 
@@ -42,13 +49,21 @@ class MLFlow:
     @tracking_uri.setter
     def tracking_uri(self, tracking_uri):
         
+        print("--" * 50)
+        
+        print("Tracking_uri: " + str(tracking_uri))
+        
         uri = ""
         
         if tracking_uri == None:
             
+            print("In 'None'")
+            
             uri = None
         
         else:
+            
+            print("Not in 'None'")
             
             filepath_list = tracking_uri.split("/")
             
@@ -57,13 +72,20 @@ class MLFlow:
             
                 tracking_uri += "/mlruns"
                 
-                # To set, uri needs "file:///" at the start
-                uri = "file:///" + str(tracking_uri)
+            # To set, uri needs "file:///" at the start
+            #uri = "file:///" + str(tracking_uri)
+            uri = "file:/" + str(tracking_uri)
                 
         self._tracking_uri = tracking_uri
         
+        print("self._tracking_uri: " + str(self.tracking_uri))
+        
+        print("URI: " + str(uri))
+        
         # Set mlflow tracking_uri
         mlflow.set_tracking_uri(uri)
+        
+        print("--" * 50)
 
 #-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-
     
@@ -100,10 +122,35 @@ class MLFlow:
                     # artifact_location (optional) = location to store run artifacts
                 # Returns: integer Id of the experiment
                 
-                print("New experiment created in tracking_uri filepath:\n" + str(self.tracking_uri))
+                print("New experiment created in tracking_uri filepath:" +\
+                      "\n  tracking_uri: " + str(self.tracking_uri) +\
+                      "\n  experiment_name: " + str(experiment_name))
             
         return experiment_id
     
+#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-
+    """
+    Using TemporaryFiles to log figures/artifacts
+        Input:
+            Artifact - figure (usually matplotlib)
+    """
+    
+    def LogArtifact_TempFile(self, artifact):
+        
+        tmpfile = NamedTemporaryFile(
+            delete=False,
+            prefix="artifact_",
+            suffix=".png"
+        )
+
+        artifact.savefig(tmpfile)
+
+        tmpfile.close()
+        
+        mlflow.log_artifact(tmpfile.name)
+
+        os.remove(tmpfile.name)
+        
 #-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-
     """
     Logging to mlflow():
@@ -132,23 +179,10 @@ class MLFlow:
                 mlflow.log_metric(key, metrics_dictionary[key])
                 
             # Figures / Artifacts            
-            if isinstance(artifact_filepaths, list): 
-                for filepath in artifact_filepaths:
-
-                    try:
-
-                        mlflow.log_artifact(filepath)
-
-                    except FileNotFoundError:
-
-                        print("Unable to upload artifact")
-                        print("-- File not found --")
-
-            elif isinstance(artifact_filepaths, str):
+            for artifact in artifact_filepaths:
                 
                 try:
-                    
-                    mlflow.log_artifact(artifact_filepaths)
+                    self.LogArtifact_TempFile(artifact)
                     
                 except FileNotFoundError:
                     

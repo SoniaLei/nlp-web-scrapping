@@ -1,4 +1,4 @@
-from sklearn.metrics import accuracy_score, f1_score, precision_score, recall_score, classification_report, confusion_matrix, auc, roc_curve
+from sklearn.metrics import accuracy_score, classification_report, confusion_matrix, f1_score, auc, roc_curve
 from sklearn.preprocessing import LabelBinarizer
 import pandas as pd
 import numpy as np
@@ -85,17 +85,8 @@ class Metrics(BasicMetrics):
     def summary_report(self):
         return NotImplemented
 
-    @property
     def f1_score(self, average='weighted'):
         return f1_score(self.test_Y, self.prediction_labels, average=average)
-    
-    @property
-    def precision_score(self, average='weighted'):
-        return precision_score(self.test_Y, self.prediction_labels, average=average)
-    
-    @property
-    def recall_score(self, average='weighted'):
-        return recall_score(self.test_Y, self.prediction_labels, average=average)
 
     @property
     def accuracy_score(self):
@@ -183,10 +174,8 @@ class Metrics(BasicMetrics):
 
     def calculate_macro_rates(self):        
         
-        """
         if not all([self._tpr.get(i) for i in range(len(self._classes))]):
             self.calculate_micro_rates()
-        """
         
         all_fpr = np.unique(np.concatenate([self._fpr[i] for i in range(len(self._classes))]))
         mean_tpr = np.zeros_like(all_fpr)
@@ -205,7 +194,6 @@ class Metrics(BasicMetrics):
                          title='Receiver operating characteristic to multi-class',
                          legend_loc="lower right", lw=2, figsize=(20, 10)):
 
-        self.calculate_micro_rates()
         self.calculate_macro_rates()
         d = list(enumerate(self._classes))
 
