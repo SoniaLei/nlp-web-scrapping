@@ -95,7 +95,7 @@ class Experiment:
         
         return params_dict
     
-    def metrics_dictionary(self, accuracy=True, precision=True, recall=True, f1=True):
+    def metrics_dictionary(self, accuracy, precision, recall, f1):
         
         metrics_dict = {}
         
@@ -113,7 +113,7 @@ class Experiment:
             
         return metrics_dict
     
-    def artifact_list(self, confusion_matrix=True, roc_curve=True):
+    def artifact_list(self, confusion_matrix, roc_curve):
         
         artifact_list = []
         

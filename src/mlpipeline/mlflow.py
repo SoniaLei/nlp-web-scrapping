@@ -49,43 +49,48 @@ class MLFlow:
     @tracking_uri.setter
     def tracking_uri(self, tracking_uri):
         
-        print("--" * 50)
+        if isinstance(tracking_uri, str):
         
-        print("Tracking_uri: " + str(tracking_uri))
-        
-        uri = ""
-        
-        if tracking_uri == None:
+            print("--" * 50)
+
+            print("Tracking_uri: " + str(tracking_uri))
+
+            uri = ""
+
+            if tracking_uri == None:
+
+                print("In 'None'")
+
+                uri = None
+
+            else:
+
+                print("Not in 'None'")
+
+                filepath_list = tracking_uri.split("/")
+
+                # The uri needs to end with the mlruns folder
+                if filepath_list[-1] != "mlruns":
+
+                    tracking_uri += "/mlruns"
+
+                # To set, uri needs "file:///" at the start
+                #uri = "file:///" + str(tracking_uri)
+                uri = "file:/" + str(tracking_uri)
+
+            self._tracking_uri = tracking_uri
+
+            print("self._tracking_uri: " + str(self.tracking_uri))
+
+            print("URI: " + str(uri))
+
+            # Set mlflow tracking_uri
+            mlflow.set_tracking_uri(uri)
+
+            print("--" * 50)
             
-            print("In 'None'")
-            
-            uri = None
-        
         else:
-            
-            print("Not in 'None'")
-            
-            filepath_list = tracking_uri.split("/")
-            
-            # The uri needs to end with the mlruns folder
-            if filepath_list[-1] != "mlruns":
-            
-                tracking_uri += "/mlruns"
-                
-            # To set, uri needs "file:///" at the start
-            #uri = "file:///" + str(tracking_uri)
-            uri = "file:/" + str(tracking_uri)
-                
-        self._tracking_uri = tracking_uri
-        
-        print("self._tracking_uri: " + str(self.tracking_uri))
-        
-        print("URI: " + str(uri))
-        
-        # Set mlflow tracking_uri
-        mlflow.set_tracking_uri(uri)
-        
-        print("--" * 50)
+            raise TypeError("Input needs to be a String")            
 
 #-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-
     
