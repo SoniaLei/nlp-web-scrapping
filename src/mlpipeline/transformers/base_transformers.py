@@ -1,7 +1,15 @@
 from sklearn.base import BaseEstimator, TransformerMixin
 
 
-class Transformer(BaseEstimator, TransformerMixin):
+class DummyTransformer(BaseEstimator, TransformerMixin):
+    """
+    Dummy transformer is an empty transformer that doesn't do anything. This transformer is required to workaround
+    the current design of pipeline, which requires at least one transformer and one vectorizer specified. 
+    
+    Example of use: 
+    When TfidfVectorizer is used as a vectorizer, it implements both data transformation (tokenization, etc.) and
+    vectorization. Therefore, a seperate transformer is not required any more.
+    """
 
     def __init__(self):
         pass
