@@ -11,6 +11,7 @@ def main():
     try:
 
         data = []
+        messageChecklist = []
 
         #Target company symbol (e.g. AAPL for Apple Inc.)
         target = 'SPY'
@@ -69,7 +70,7 @@ def main():
 
                 messageIdA = a.find('a', attrs={'class': 'st_28bQfzV st_1E79qOs st_3TuKxmZ st_3Y6ESwY st_GnnuqFp st_1VMMH6S'})
                 messageId = messageIdA.attrs['href']
-                if messageId in data:
+                if messageId in messageChecklist:
                     print('No new tweets')
                     break
 
@@ -87,6 +88,7 @@ def main():
                 print(f"Sentiment: {sentiment}\nUser: {user}\nMessageId: {messageId}\nContent: {content}\n")
 
                 data.append((user, messageId, sentiment, content))
+                messageChecklist.append(messageId)
 
             refresh_attempts-=1
             print('Going to sleep.', refresh_attempts, 'refreshes left.')
