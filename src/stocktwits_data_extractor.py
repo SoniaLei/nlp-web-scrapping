@@ -1,4 +1,5 @@
 import pandas as pd
+import re
 import time
 from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
@@ -60,8 +61,8 @@ def main():
         refresh_attempts = 10
         while refresh_attempts:
 
-            content = driver.page_source
-            soup = BeautifulSoup(content, features="html.parser")
+            pageContent = driver.page_source
+            soup = BeautifulSoup(pageContent, features="html.parser")
             print('got soup')
 
             #Find all tweets
@@ -81,10 +82,12 @@ def main():
                 sentimentDiv = sentimentSpan.find('div', attrs={'class': 'lib_XwnOHoV lib_3UzYkI9 lib_lPsmyQd lib_2TK8fEo'})
                 sentiment = sentimentDiv.get_text()
 
+                content = a.find('div', attrs={'class':'st_3SL2gug'}).get_text()
+                if len(re.findall(r'\w+', content)) < 4:
+                    continue
+
                 userDiv = a.find('a', attrs={'class':'st_x9n-9YN st_2LcBLI2 st_1vC-yaI st_1VMMH6S'})
                 user = userDiv.find('span').get_text()
-
-                content = a.find('div', attrs={'class':'st_3SL2gug'}).get_text()
 
                 dateScraped = time.strftime("%Y/%m/%d", time.localtime())
                 timeScraped = time.strftime("%H:%M:%S", time.localtime())
