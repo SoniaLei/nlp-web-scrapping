@@ -56,6 +56,7 @@ def main():
         # #Find all tweets
         # findAllInSoup = soup.find_all(attrs={'class':'st_VgdfbpJ st_31oNG-n st_3A22T1e st_vmBJz6-'})
 
+        time_between_refreshes = 20
         refresh_attempts = 10
         while refresh_attempts:
 
@@ -93,9 +94,9 @@ def main():
                 data.append((user, messageId, sentiment, content, dateScraped, timeScraped))
                 messageChecklist.append(messageId)
 
-            refresh_attempts-=1
             print('Going to sleep.', refresh_attempts, 'refreshes left.')
-            time.sleep(20)
+            refresh_attempts-=1
+            time.sleep(time_between_refreshes)
 
             try:
                 element = driver.find_element_by_xpath('/html/body/div[2]/div/div/div[3]/div[2]/div/div[1]/div[2]/div/div/div[2]/div[2]/div/div')
