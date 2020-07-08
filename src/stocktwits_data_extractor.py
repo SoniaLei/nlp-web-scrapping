@@ -2,6 +2,7 @@ import pandas as pd
 import time
 from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
+from selenium.common.exceptions import NoSuchElementException
 from bs4 import BeautifulSoup
 
 
@@ -47,32 +48,57 @@ def main():
             no_of_pagedowns-=1
             print('scrolling... ',no_of_pagedowns, ' to go')
 
-        content = driver.page_source
-        soup = BeautifulSoup(content, features="html.parser")
-        print('got soup')
+        # content = driver.page_source
+        # soup = BeautifulSoup(content, features="html.parser")
+        # print('got soup')
+        #
+        # #Find all tweets
+        # findAllInSoup = soup.find_all(attrs={'class':'st_VgdfbpJ st_31oNG-n st_3A22T1e st_vmBJz6-'})
 
-        #Find all tweets
-        findAllInSoup = soup.find_all(attrs={'class':'st_VgdfbpJ st_31oNG-n st_3A22T1e st_vmBJz6-'})
+        refresh_attempts = 10
+        while refresh_attempts:
 
-        for a in findAllInSoup:
+            content = driver.page_source
+            soup = BeautifulSoup(content, features="html.parser")
+            print('got soup')
 
-            sentimentDiv = a.find('div', attrs={'class': 'lib_XwnOHoV lib_3UzYkI9 lib_lPsmyQd lib_2TK8fEo'})
-            if sentimentDiv is None:
-                continue
+            #Find all tweets
+            findAllInSoup = soup.find_all(attrs={'class':'st_VgdfbpJ st_31oNG-n st_3A22T1e st_vmBJz6-'})
 
-            sentiment = sentimentDiv.get_text()
+            for a in findAllInSoup:
 
-            userDiv = a.find('a', attrs={'class':'st_x9n-9YN st_2LcBLI2 st_1vC-yaI st_1VMMH6S'})
-            user = userDiv.find('span').get_text()
+                messageIdA = a.find('a', attrs={'class': 'st_28bQfzV st_1E79qOs st_3TuKxmZ st_3Y6ESwY st_GnnuqFp st_1VMMH6S'})
+                messageId = messageIdA.attrs['href']
+                if messageId in data:
+                    print('No more new tweets')
+                    break
 
-            messageIdA = a.find('a', attrs={'class': 'st_28bQfzV st_1E79qOs st_3TuKxmZ st_3Y6ESwY st_GnnuqFp st_1VMMH6S'})
-            messageId = messageIdA.attrs['href']
-            
-            content = a.find('div', attrs={'class':'st_3SL2gug'}).get_text()
+                sentimentSpan = a.find('span', attrs={'class':'st_11GoBZI'})
+                if sentimentSpan is None:
+                    continue
+                sentimentDiv = sentimentSpan.find('div', attrs={'class': 'lib_XwnOHoV lib_3UzYkI9 lib_lPsmyQd lib_2TK8fEo'})
+                sentiment = sentimentDiv.get_text()
 
-            print(f"Sentiment: {sentiment}\nUser: {user}\nMessageId: {messageId}\nContent: {content}\n")
+                userDiv = a.find('a', attrs={'class':'st_x9n-9YN st_2LcBLI2 st_1vC-yaI st_1VMMH6S'})
+                user = userDiv.find('span').get_text()
 
-            data.append((user, messageId, sentiment, content))
+                content = a.find('div', attrs={'class':'st_3SL2gug'}).get_text()
+
+                print(f"Sentiment: {sentiment}\nUser: {user}\nMessageId: {messageId}\nContent: {content}\n")
+
+                data.append((user, messageId, sentiment, content))
+
+            refresh_attempts-=1
+            print('Going to sleep.', refresh_attempts, 'refreshes left.')
+            time.sleep(20)
+
+            try:
+                element = driver.find_element_by_xpath('/html/body/div[2]/div/div/div[3]/div[2]/div/div[1]/div[2]/div/div/div[2]/div[2]/div/div')
+                element.click()
+            except NoSuchElementException:
+                print('can''t refresh yet.')
+            finally:
+                print('refreshing...')
 
     finally:
         driver.close()
