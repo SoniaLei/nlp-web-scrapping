@@ -85,9 +85,12 @@ def main():
 
                 content = a.find('div', attrs={'class':'st_3SL2gug'}).get_text()
 
-                print(f"Sentiment: {sentiment}\nUser: {user}\nMessageId: {messageId}\nContent: {content}\n")
+                dateScraped = time.strftime("%Y/%m/%d", time.localtime())
+                timeScraped = time.strftime("%H:%M:%S", time.localtime())
 
-                data.append((user, messageId, sentiment, content))
+                print(f"Sentiment: {sentiment}\nUser: {user}\nMessageId: {messageId}\nContent: {content}\nDate: {dateScraped}\nTime: {timeScraped}\n")
+
+                data.append((user, messageId, sentiment, content, dateScraped, timeScraped))
                 messageChecklist.append(messageId)
 
             refresh_attempts-=1
@@ -108,7 +111,7 @@ def main():
         print('driver quit')
 
 
-    df = pd.DataFrame(data, columns=['user', 'message_id', 'sentiment', 'content'])
+    df = pd.DataFrame(data, columns=['user', 'message_id', 'sentiment', 'content', 'date', 'time'])
 
     print('table laid')
 
