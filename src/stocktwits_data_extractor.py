@@ -70,7 +70,7 @@ def main():
                 messageIdA = a.find('a', attrs={'class': 'st_28bQfzV st_1E79qOs st_3TuKxmZ st_3Y6ESwY st_GnnuqFp st_1VMMH6S'})
                 messageId = messageIdA.attrs['href']
                 if messageId in data:
-                    print('No more new tweets')
+                    print('No new tweets')
                     break
 
                 sentimentSpan = a.find('span', attrs={'class':'st_11GoBZI'})
