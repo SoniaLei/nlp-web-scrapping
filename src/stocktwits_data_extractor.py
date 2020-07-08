@@ -59,7 +59,7 @@ def main():
         # findAllInSoup = soup.find_all(attrs={'class':'st_VgdfbpJ st_31oNG-n st_3A22T1e st_vmBJz6-'})
 
         time_between_refreshes = 30
-        refresh_attempts = 2
+        refresh_attempts = 120*14
         while refresh_attempts:
 
             pageContent = driver.page_source
@@ -102,13 +102,16 @@ def main():
             refresh_attempts-=1
             time.sleep(time_between_refreshes)
 
-            try:
-                element = driver.find_element_by_xpath('/html/body/div[2]/div/div/div[3]/div[2]/div/div[1]/div[2]/div/div/div[2]/div[2]/div/div')
-                element.click()
-            except NoSuchElementException:
-                print('can''t refresh yet.')
-            finally:
-                print('refreshing...')
+            # try:
+            #     element = driver.find_element_by_xpath('/html/body/div[2]/div/div/div[3]/div[2]/div/div[1]/div[2]/div/div/div[2]/div[2]/div/div')
+            #     element.click()
+            # except NoSuchElementException:
+            #     print('can''t refresh yet.')
+            # finally:
+            #     print('refreshing...')
+            driver.refresh()
+            print('refreshing...')
+            time.sleep(2)
 
     finally:
         driver.close()
