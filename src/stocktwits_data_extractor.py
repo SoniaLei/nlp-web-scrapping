@@ -1,3 +1,4 @@
+import os
 import pandas as pd
 import re
 import time
@@ -57,8 +58,8 @@ def main():
         # #Find all tweets
         # findAllInSoup = soup.find_all(attrs={'class':'st_VgdfbpJ st_31oNG-n st_3A22T1e st_vmBJz6-'})
 
-        time_between_refreshes = 20
-        refresh_attempts = 10
+        time_between_refreshes = 30
+        refresh_attempts = 2
         while refresh_attempts:
 
             pageContent = driver.page_source
@@ -119,7 +120,12 @@ def main():
 
     print('table laid')
 
-    df.to_csv('tweets.csv', index=False, encoding='utf-8')
+
+    if not os.path.isfile('tweets.csv'):
+        df.to_csv('tweets.csv', index=False, encoding='utf-8')
+    else: # else it exists so append without writing the header
+        df.to_csv('tweets.csv', mode='a', header=False, index=False)
+    #df.to_csv('tweets.csv', index=False, encoding='utf-8')
     print(f"{len(df)} tweets written to tweets.csv")
 
     input('Press ENTER to exit')
