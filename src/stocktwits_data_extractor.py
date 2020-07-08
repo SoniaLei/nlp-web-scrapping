@@ -102,15 +102,15 @@ def main():
             refresh_attempts-=1
             time.sleep(time_between_refreshes)
 
-            # try:
-            #     element = driver.find_element_by_xpath('/html/body/div[2]/div/div/div[3]/div[2]/div/div[1]/div[2]/div/div/div[2]/div[2]/div/div')
-            #     element.click()
-            # except NoSuchElementException:
-            #     print('can''t refresh yet.')
-            # finally:
-            #     print('refreshing...')
-            driver.refresh()
-            print('refreshing...')
+            try:
+                element = driver.find_element_by_xpath('/html/body/div[2]/div/div/div[3]/div[2]/div/div[1]/div[2]/div/div/div[2]/div[2]/div/div')
+                element.click()
+            except NoSuchElementException:
+                print('can''t refresh yet.')
+            finally:
+                print('refreshing...')
+            # driver.refresh()
+            # print('refreshing...')
 
     finally:
         driver.close()
