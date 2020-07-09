@@ -4,14 +4,19 @@ from .context import Context
 from .metrics import Metrics
 from .data import Data
 from .mlflow import MLFlow
-import tempfile
+from os.path import abspath, dirname
 
 class Experiment:
     """
     Experiment class that orchestrates the execution of an experiment.
     """
     
-    mlflow_uri_path = '$PROJECT_PATHS$/../../mlruns'
+    #mlflow_uri_path = '$PROJECT_PATHS$/../../mlruns'
+    
+    path = abspath(dirname(""))    
+    mlflow_uri_path = path.split("nlp-web-scrapping")[0] + "nlp-web-scrapping/mlruns"
+    
+    print("\nURI:\n",mlflow_uri_path,"\n")
         
     def __init__(self, conf=None, data=None, pipeline=None):
         self.config = conf
@@ -68,8 +73,8 @@ class Experiment:
             self._pipeline = pipeline_conf.init()
 
     def run(self, probabilities=False):
-        pipeline_fitted = self.pipeline.fit(self.data.train_X,
-                                            self.data.train_Y)
+        pipeline_fitted = self.pipeline.fit(self.data.train_X, self.data.train_Y)
+        
         classes_ = pipeline_fitted._pipeline.steps[-1][1].classes_ if probabilities else 'outcome'
         
         func = pipeline_fitted.predict_proba if probabilities else pipeline_fitted.predict

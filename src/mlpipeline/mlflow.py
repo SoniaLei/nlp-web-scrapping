@@ -165,7 +165,7 @@ class MLFlow:
             Artifacts  - List (Optional)
     """
 
-    def Logging(self, params_dictionary, metrics_dictionary, artifact_filepaths = []):
+    def Logging(self, params_dictionary, metrics_dictionary = {}, artifact_filepaths = []):
                 
         # Getting experiment_id
         experiment_id = self.Experiment_Id()
