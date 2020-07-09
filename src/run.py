@@ -1,7 +1,9 @@
-from mlpipeline import read_config_file, Context, Experiment
+from mlpipeline.context import Context
+from mlpipeline.pipeline import Pipelines
 import argparse
 import sys
 import os
+
 
 def get_parser_args():
     """
@@ -18,26 +20,34 @@ def get_parser_args():
 
 def main():
     """
-    Orchestrates the whole ml program.
+    Starts the whole ml nlp programme.
     """
     args = get_parser_args()
 
     if not os.path.exists(args.config_file):
         raise FileNotFoundError(f"{args.config_file} is not found in the root filesystem.")
 
-    print("Starting ml pipeline program.")
-
     config_context = Context(exp_name=args.file_name, conf_file=args.config_file)
-    config = config_context.validate_configuration_parameters()
-    experiment = Experiment(config)
-    experiment.run(probabilities=True)
-    # print(experiment.results.confusion_matrix)
-    # print(experiment.results.accuracy_score)
-    # experiment.results.plot_confusion_matrix
-    # experiment.save_to_mlflow()
-    # print(experiment.results.predictions)
-    print("SUCCESSFUL!!!!!")
+
+
 
 
 if __name__ == '__main__':
-    main()
+    print("Starting ml pipeline program.")
+    #main() # Main() reads arguments being passed to the script.
+
+    # Testing purposes:
+    # Running from __main__ and not passing arg for now.
+    context = Context('', conf_file='experiment_configs/exp005.yml')
+    print(context.exp_name)
+
+    pipelines = Pipelines(context.exp_name,
+                          context.data,
+                          context.transformers,
+                          context.vectorizers,
+                          context.estimators)
+    pipelines.start_runs(safe_run=True)
+    experiments = pipelines.collect_experiments()
+    exp_combinations = experiments.compute_exp_combinations()
+    experiments.save_exp_combinations(exp_combinations)
+
