@@ -15,7 +15,7 @@ def main():
         if not os.path.isdir('../data/raw'):
             os.mkdir('../data/raw')
 
-        data = []
+        #data = []
         messageChecklist = []
 
         #Target company symbol (e.g. AAPL for Apple Inc.)
@@ -54,16 +54,11 @@ def main():
             no_of_pagedowns-=1
             print('scrolling... ',no_of_pagedowns, ' to go')
 
-        # content = driver.page_source
-        # soup = BeautifulSoup(content, features="html.parser")
-        # print('got soup')
-        #
-        # #Find all tweets
-        # findAllInSoup = soup.find_all(attrs={'class':'st_VgdfbpJ st_31oNG-n st_3A22T1e st_vmBJz6-'})
-
-        time_between_refreshes = 20
+        time_between_refreshes = 60
         refresh_attempts = 10
         while refresh_attempts:
+
+            data = []
 
             pageContent = driver.page_source
             soup = BeautifulSoup(pageContent, features="html.parser")
@@ -101,6 +96,17 @@ def main():
                 data.append((user, messageId, sentiment, content, dateScraped, timeScraped))
                 messageChecklist.append(messageId)
 
+            df = pd.DataFrame(data, columns=['user', 'message_id', 'sentiment', 'content', 'date', 'time'])
+
+            print('table laid')
+
+            if data:
+                if not os.path.isfile('../data/raw/scrapedtweets.csv'):
+                    df.to_csv('../data/raw/scrapedtweets.csv', index=False, encoding='utf-8')
+                else: # else it exists so append without writing the header
+                    df.to_csv('../data/raw/scrapedtweets.csv', mode='a', header=False, index=False)
+                print(f"{len(df)} tweets written to scrapedtweets.csv")
+
             print('Going to sleep.', refresh_attempts, 'refreshes left.')
             refresh_attempts-=1
             time.sleep(time_between_refreshes)
@@ -119,19 +125,18 @@ def main():
         driver.close()
         driver.quit()
         print('driver quit')
-
-    df = pd.DataFrame(data, columns=['user', 'message_id', 'sentiment', 'content', 'date', 'time'])
-
-    print('table laid')
-
-    if not os.path.isfile('../data/raw/scrapedtweets.csv'):
-        df.to_csv('../data/raw/scrapedtweets.csv', index=False, encoding='utf-8')
-    else: # else it exists so append without writing the header
-        df.to_csv('../data/raw/scrapedtweets.csv', mode='a', header=False, index=False)
-    print(f"{len(df)} tweets written to scrapedtweets.csv")
+    #
+    # df = pd.DataFrame(data, columns=['user', 'message_id', 'sentiment', 'content', 'date', 'time'])
+    #
+    # print('table laid')
+    #
+    # if not os.path.isfile('../data/raw/scrapedtweets.csv'):
+    #     df.to_csv('../data/raw/scrapedtweets.csv', index=False, encoding='utf-8')
+    # else: # else it exists so append without writing the header
+    #     df.to_csv('../data/raw/scrapedtweets.csv', mode='a', header=False, index=False)
+    # print(f"{len(df)} tweets written to scrapedtweets.csv")
 
     input('Press ENTER to exit')
-
 
 if __name__ == '__main__':
     main()
