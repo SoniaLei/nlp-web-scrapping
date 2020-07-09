@@ -12,6 +12,9 @@ def main():
 
     try:
 
+        if not os.path.isdir('../data/raw'):
+            os.mkdir('../data/raw')
+
         data = []
         messageChecklist = []
 
@@ -58,8 +61,8 @@ def main():
         # #Find all tweets
         # findAllInSoup = soup.find_all(attrs={'class':'st_VgdfbpJ st_31oNG-n st_3A22T1e st_vmBJz6-'})
 
-        time_between_refreshes = 30
-        refresh_attempts = 120*12
+        time_between_refreshes = 20
+        refresh_attempts = 10
         while refresh_attempts:
 
             pageContent = driver.page_source
@@ -117,18 +120,15 @@ def main():
         driver.quit()
         print('driver quit')
 
-
     df = pd.DataFrame(data, columns=['user', 'message_id', 'sentiment', 'content', 'date', 'time'])
 
     print('table laid')
 
-
-    if not os.path.isfile('tweets.csv'):
-        df.to_csv('tweets.csv', index=False, encoding='utf-8')
+    if not os.path.isfile('../data/raw/scrapedtweets.csv'):
+        df.to_csv('../data/raw/scrapedtweets.csv', index=False, encoding='utf-8')
     else: # else it exists so append without writing the header
-        df.to_csv('tweets.csv', mode='a', header=False, index=False)
-    #df.to_csv('tweets.csv', index=False, encoding='utf-8')
-    print(f"{len(df)} tweets written to tweets.csv")
+        df.to_csv('../data/raw/scrapedtweets.csv', mode='a', header=False, index=False)
+    print(f"{len(df)} tweets written to scrapedtweets.csv")
 
     input('Press ENTER to exit')
 
