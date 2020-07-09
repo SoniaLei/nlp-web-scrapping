@@ -1,252 +1,63 @@
-# Imports
-import sklearn
+"""
+Gridsearch module for GridSearch object and hyperparameter tunning
+"""
+from sklearn.metrics import SCORERS
 from sklearn.model_selection import GridSearchCV
-from sklearn.pipeline import Pipeline
-import re
 
-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-
 
 class GridSearch:
-    
-# Constructor
-    
-    def __init__(self, estimator, parameters, cv = None, scoring = None):
-        self.estimator = estimator
+
+    def __init__(self, pipeline, parameters, cv=None, scoring='accuracy',
+                 n_jobs=-1, refit=True, verbose=3, return_train_score=True):
+        self.pipeline = pipeline
         self.parameters = parameters
-        self.cv = cv
+        self.cv = cv or 0
         self.scoring = scoring
-        self._model = None
-        
-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-
+        self.n_jobs = n_jobs
+        self.refit = refit
+        self.verbose = verbose
+        self.return_train_score = return_train_score
+        self.sk_gridsearch = None
 
-# Getters & Setters
-
-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-
-
-# estimator
-    # Object: object that will have its parameters looped through
-    # It can be an SAM model or a pipeline containing a vectoriser, model etc.
-    
-    @property
-    def estimator(self):
-        print("Getting 'estimator' ...")
-        return self._estimator
-    
-    @estimator.setter
-    def estimator(self, estimator):
-        print("Setting 'estimator' ...")
-        
-        if isinstance(estimator, Pipeline):
-            self._estimator = estimator
-            
-        else:            
-            raise TypeError("Input needs to be a Classifier or Pipeline object")
-
-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-
-
-# parameters
-    # Dictionary: parameters to be looped through in the Grid Search
-    
-    @property
-    def parameters(self):
-        print("Getting 'parameters' ...")
-        return self._parameters
-    
-    @parameters.setter
-    def parameters(self, parameters):
-        print("Setting 'parameters' ...")
-        
-        if isinstance(parameters, list):
-            self._parameters = parameters
-            
-        else:
-            raise TypeError("Input needs to be a List")
-            
-    
-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-
-
-# cv (cross validation)
-    # Integer: number of different datasets the whole set will be split into
-    
-    @property
-    def cv(self):
-        print("Getting 'cv' ...")
-        return self._cv
-    
-    @cv.setter
-    def cv(self, cv):
-        print("Setting 'cv' ...")
-        
-        if isinstance(cv, int) or cv == None:
-            self._cv = cv
-            
-        else:
-            raise TypeError("Input needs to be an Integer")
-        
-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-
-
-# model
-    # Grid_Search_CV() model: model generated from Grid_Search_CV module
-    
-    @property
-    def model(self):
-        print("Getting 'model' ...")
-        return self._model
-    
-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-
-
-# scoring
-    # String: scoring system for the Grid Search
-    
     @property
     def scoring(self):
-        print("Getting 'scoring' ...")
         return self._scoring
-    
+
     @scoring.setter
-    def scoring(self, scoring):
-        print("Setting 'scoring' ...")
-        
-        if isinstance(scoring, str) or scoring == None:
-            self._scoring = scoring
-            
-        else:
-            raise TypeError("Input needs to be a String")
-        
-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-
+    def scoring(self, value):
+        if not isinstance(value, (str, callable, list, tuple)):
+            raise TypeError(f"Scoring parameter in GridSearch invalid."
+                            f"Possible options are {SCORERS.keys()}")
+        self._scoring = value
 
-# Functions
+    @property
+    def sk_gridsearch(self):
+        return self._sk_gridsearch
 
-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-
+    @sk_gridsearch.setter
+    def sk_gridsearch(self, _):
+        self._sk_gridsearch = GridSearchCV(estimator=self.pipeline,
+                                           param_grid=self.parameters,
+                                           n_jobs=self.n_jobs,
+                                           cv=self.cv,
+                                           refit=self.refit,
+                                           verbose=self.verbose,
+                                           scoring=self.scoring,
+                                           return_train_score=self.return_train_score)
 
-# Shows all the scoring strings that can be entered into Grid Search
-    
-    def scoring_keys(self):
-        
-        print(sklearn.metrics.SCORERS.keys())
-        
-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-
+    def fit(self, X=None, y=None):
+        return self.sk_gridsearch.fit(X, y)
 
-# Shortens the name of permutations - easier to read
-        
-    def Names_GridSearch(self, tuned_parameters={}): #, model):
-        
-        values_list = []
+    def predict(self, X=None):
+        return self.sk_gridsearch.predict(X)
 
-        parameters_list = [parameter for parameter in tuned_parameters.keys()]
-        
-        params_to_print = [parameter.split("__")[-1] for parameter in parameters_list]
+    def predict_proba(self, X=None):
+        return self.sk_gridsearch.predict_proba(X)
 
-        for parameter, param in zip(parameters_list, params_to_print):
+    @property
+    def classes(self):
+        return self.sk_gridsearch.best_estimator_.classes_
 
-            match = re.search("classifier", param)
-            
-            value = str(param) + ": " + str(tuned_parameters[parameter]).split("(")[0].strip()
-
-            values_list.append(value)
-
-        best_params = ", ".join(value for value in values_list)
-
-        return best_params
-
-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-
-    
-    def fit(self, X_train, Y_train):
-    # Estimator is 'fitted' with the trained data:
-        """
-        Inputs:
-            X_train - DataFrame
-            Y_train - DataFrame
-        Outputs:
-            model set to self.model
-        """
-        
-        model = GridSearchCV(
-            estimator = self.estimator, param_grid = self.parameters,
-            scoring=self.scoring, cv=self.cv, n_jobs=-1
-        )
-        
-        print("Fitting Grid_Search model ...")
-        
-        model.fit(X_train, Y_train)
-        
-        print("Setting 'model' ...")
-        
-        self._model = model
-    
-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-
-    
-    def split_scores(self):
-    # Scores for each dataset from the cross-validation
-        """
-        Outputs:
-            List - List of the split scores
-        """
-        
-        split_scores_list = []
-        
-        k = self.cv
-        n = k
-        
-        model = self.model
-        
-        if n != None:
-            while n > 0:
-                
-                score_number = str(k - n)
-                
-                split_score = str("split" + score_number + "_test_score")
-                
-                split_scores_list.append(model.cv_results_[split_score])
-                
-                n -= 1
-                
-        else:
-            print("No cross-validation scores")
-            
-        return split_scores_list
-    
-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-
-
-    def best_params(self):
-    # The parameters with the best result for the scoring metric
-        """
-        Outputs:
-            Object - Object containing the best parameters
-            Float - score of the best parameters                        
-        """        
-        model = self.model
-        
-        best_params = model.best_params_
-        
-        best_score = model.best_score_
-        
-        return best_params, best_score
-    
-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-
-
-    def permutations_score(self):
-    # Each permutations score, with their standard deviation
-        """
-        Outputs:
-            List - List of the score, std and parameters used
-        """
-        
-        model = self.model
-        parameters = self.parameters
-        
-        scores = []
-        
-        means = model.cv_results_['mean_test_score']
-        stds = model.cv_results_['std_test_score']
-        params = model.cv_results_['params']
-        
-        for mean, std, param in zip(means, stds, params):
-            
-            score = str("%0.3f (+/-%0.03f) for %r" %
-                        (mean, std * 2,
-                         self.Names_GridSearch(tuned_parameters=param)))
-                        
-            scores.append(score)
-            
-        return scores
+    @property
+    def best_estimator(self):
+        return self.sk_gridsearch.best_estimator_
