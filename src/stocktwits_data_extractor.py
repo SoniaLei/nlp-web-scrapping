@@ -55,7 +55,7 @@ def main():
             print('scrolling... ',no_of_pagedowns, ' to go')
 
         time_between_refreshes = 30
-        refresh_attempts = 21
+        refresh_attempts = 10
         while refresh_attempts:
 
             data = []
@@ -117,7 +117,7 @@ def main():
                 time.sleep(5)
             else:
                 try:
-                    element = driver.find_element_by_xpath('/html/body/div[2]/div/div/div[3]/div[2]/div/div[1]/div[2]/div/div/div[2]/div[2]/div/div')
+                    element = driver.find_element_by_css_selector('.st_2t6tMpX.st_2-AYUR9.st_1Q0z4ky.st_jSJApJj.st_3pLPKgx.st_jGV698i.st_PLa30pM.st_1Z-amNw.st_1jzr122.st_2HqScKh')
                     element.click()
                 except NoSuchElementException:
                     print('can''t refresh yet.')
