@@ -54,8 +54,8 @@ def main():
             no_of_pagedowns-=1
             print('scrolling... ',no_of_pagedowns, ' to go')
 
-        time_between_refreshes = 60
-        refresh_attempts = 10
+        time_between_refreshes = 30
+        refresh_attempts = 21
         while refresh_attempts:
 
             data = []
@@ -107,34 +107,27 @@ def main():
                     df.to_csv('../data/raw/scrapedtweets.csv', mode='a', header=False, index=False)
                 print(f"{len(df)} tweets written to scrapedtweets.csv")
 
-            print('Going to sleep.', refresh_attempts, 'refreshes left.')
+            print('Going to sleep.', refresh_attempts, 'refreshes left.\n', len(messageChecklist), 'tweets scraped so far this session.')
             refresh_attempts-=1
             time.sleep(time_between_refreshes)
 
-            try:
-                element = driver.find_element_by_xpath('/html/body/div[2]/div/div/div[3]/div[2]/div/div[1]/div[2]/div/div/div[2]/div[2]/div/div')
-                element.click()
-            except NoSuchElementException:
-                print('can''t refresh yet.')
-            finally:
+            if refresh_attempts % 20 == 0:
+                driver.refresh()
                 print('refreshing...')
-            # driver.refresh()
-            # print('refreshing...')
+                time.sleep(5)
+            else:
+                try:
+                    element = driver.find_element_by_xpath('/html/body/div[2]/div/div/div[3]/div[2]/div/div[1]/div[2]/div/div/div[2]/div[2]/div/div')
+                    element.click()
+                except NoSuchElementException:
+                    print('can''t refresh yet.')
+                finally:
+                    print('loading new posts...')
 
     finally:
         driver.close()
         driver.quit()
         print('driver quit')
-    #
-    # df = pd.DataFrame(data, columns=['user', 'message_id', 'sentiment', 'content', 'date', 'time'])
-    #
-    # print('table laid')
-    #
-    # if not os.path.isfile('../data/raw/scrapedtweets.csv'):
-    #     df.to_csv('../data/raw/scrapedtweets.csv', index=False, encoding='utf-8')
-    # else: # else it exists so append without writing the header
-    #     df.to_csv('../data/raw/scrapedtweets.csv', mode='a', header=False, index=False)
-    # print(f"{len(df)} tweets written to scrapedtweets.csv")
 
     input('Press ENTER to exit')
 
