@@ -1,4 +1,8 @@
+"""
+Factory class to register and instantiate objects.
+"""
 from sklearn.linear_model import LogisticRegression
+from sklearn.naive_bayes import MultinomialNB
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.feature_extraction.text import CountVectorizer, TfidfVectorizer
 from sklearn.svm import SVC
@@ -10,21 +14,27 @@ class ObjectFactory:
     """Factory class returning object instance of type object_type"""
 
     _registry = {
+        # Transformers
         'StopWordsRemoval': StopWordsRemoval,
         'TweetCleaner': TweetCleaner,
         'Lematization': Lematization,
+        'Tokenizer': Tokenizer,
+        'TweetVectorizer': TweetVectorizer,
+        # Vectorizers
         'CountVectorizer': CountVectorizer,
         'TfidfVectorizer': TfidfVectorizer,
         'Word2VecVectorizer': Word2VecVectorizer,
+        # Estimators classifiers
         'SVC': SVC,
+        'MultinomialNB': MultinomialNB,
         'LogisticRegression': LogisticRegression,
-        'Tokenizer': Tokenizer,
-        'TweetVectorizer': TweetVectorizer,
+        'RandomForestClassifier': RandomForestClassifier,
     }
 
     @classmethod
     def create_object(self, class_name, kwargs=None):
-        """Creates an instance of an estimator.
+        """
+        Returns an instance of the Object if present in registry.
         """
         kwargs = kwargs or {}
         obj = ObjectFactory._registry.get(class_name, None)
