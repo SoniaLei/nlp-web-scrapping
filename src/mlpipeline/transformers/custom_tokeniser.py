@@ -7,7 +7,8 @@ import re
 class Custom_tokeniser(BaseEstimator, TransformerMixin):
     
     def __init__(self, to_lower=True, remove_stopwords=True):
-        pass
+        self.to_lower = to_lower
+        self.remove_stopwords = remove_stopwords
     
     def fit(self, X, y=None):
         return self
@@ -31,11 +32,16 @@ class Custom_tokeniser(BaseEstimator, TransformerMixin):
 
             myTokens = re.split(r'\W+', sentence)
             # Tokenising the words
-
-            myTokens = [token.lower() for token in myTokens if token not in stopwords]
-            # Removing stop words and putting words into lowercase
-
+            
             myTokens = [Lemmatiser.lemmatize(token) for token in myTokens]
             # Lemmatising the words
+            
+            if self.to_lower:
+                myTokens = [token.lower() for token in myTokens]
+                # Putting words into lowercase
+                
+            if remove_stopwords:
+                myTokens = [token for token in myTokens if token not in stopwords]
+                # Removing stop words
 
         return myTokens
