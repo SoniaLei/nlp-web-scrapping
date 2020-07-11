@@ -21,6 +21,8 @@ class Experiment:
                                predictions=predictions,
                                classes=classes,
                                test_Y=test_Y)
+        # Tag to track if experiment has been logged in `MlFlow`.
+        self.saved = False
 
     @property
     def name(self):
@@ -60,11 +62,12 @@ class Experiment:
                 tmpfile.seek(0)
                 mlflow.log_artifact(tmpfile.name)
 
+        self.saved = True
 
 
 class Experiments:
     """
-    Experiments class that orchestrates the execution of multiple experiment,
+    Experiments class that orchestrates the execution of multiple `Experiment`,
     including combination of experiments.
     """
     runtime_save = True
@@ -88,30 +91,29 @@ class Experiments:
             self.add_experiment(exp_name=name,
                                 predictions=predictions)
 
-
     def compute_exp_combinations(self):
-        print("Computing exp permutations . . . ")
-        combined_models = {}
-        num_models = list(range(1, len(self.collection.keys())))
+
         combined_models_names = []
-        print("IN Experiments.collection already : ", Experiments.collection)
+        combined_models = {}
+        # we start at 1 since we want only aggregation of results
+        # from 2+ models.
+        num_models = list(range(1, len(self.collection.keys())))
 
         for num_model in num_models:
+            # combinations from 2+ models results.
             combination = combinations(self.collection.keys(), num_model + 1)
             combined_models_names.extend(list(combination))
 
         for num, combined_model in enumerate(combined_models_names):
-            print(f"Computing {num} model . . . ", combined_model)
             num_models = len(combined_model)
             weight = 1 / num_models
 
-            proba = np.zeros((len(self.test_Y), len(self.classes)))
+            probabilities = np.zeros((len(self.test_Y), len(self.classes)))
 
             for model in combined_model:
-                print('model ', model)
 
                 prob_weighted = self.collection[model].predictions * weight
-                proba += prob_weighted
+                probabilities += prob_weighted
 
-            combined_models[combined_model] = proba
+            combined_models[combined_model] = probabilities
         return combined_models
