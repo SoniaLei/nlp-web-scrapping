@@ -14,7 +14,8 @@ class Pipelines:
     vectorizer and one estimator at the end of each pipe line.
     """
 
-    def __init__(self, exp_name, data, transformers, vectorizers, estimators):
+    def __init__(self, exp_name, data, transformers, vectorizers, estimators,
+                 cv_keyword='cv'):
         """
         Initiates a Pipelines Object by given data, transformers, vectorizers,
         and estimators. Note, vectorizers can be `None` if so, pipelines assumes
@@ -28,7 +29,7 @@ class Pipelines:
         self.transformers = transformers
         self.vectorizers = vectorizers
         self.estimators = estimators
-        self.cv_keyword = 'cv'
+        self.cv_keyword = 'cvs'
 
         self.names = self.set_pipelines_names()
         self.sequences = self.set_pipelines_lists()
@@ -115,9 +116,9 @@ class Pipelines:
             gridsearch = GridSearch(pipeline=pipeline.sk_pipeline,
                                     parameters=params,
                                     cv=cv)
-            gridsearch.fit(self.data.train_X, self.data.train_Y)
+            gridsearch.fit(X=self.data.train_X, y=self.data.train_Y)
 
-            predictions = gridsearch.predict_proba(self.data.test_X)
+            predictions = gridsearch.predict_proba(X=self.data.test_X)
 
             if Experiments.classes is None:
                 Experiments.classes = gridsearch.classes
