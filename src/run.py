@@ -35,17 +35,13 @@ def main():
 if __name__ == '__main__':
     print("Starting ml pipeline program.")
     #main() # Main() reads arguments being passed to the script.
-
-    # Testing purposes:
-    # Running from __main__ and not passing arg for now.
     context = Context('', conf_file='experiment_configs/exp005.yml')
-    print(context.exp_name)
-
-    pipelines = Pipelines(context.exp_name,
-                          context.data,
-                          context.transformers,
-                          context.vectorizers,
-                          context.estimators)
+    print(f"Reading configurations for experiment: {context.exp_name}.")
+    pipelines = Pipelines(exp_name=context.exp_name,
+                          data=context.data,
+                          transformers=context.transformers,
+                          vectorizers=context.vectorizers,
+                          estimators=context.estimators)
     pipelines.start_runs(safe_run=True)
     experiments = pipelines.collect_experiments()
     exp_combinations = experiments.compute_exp_combinations()
