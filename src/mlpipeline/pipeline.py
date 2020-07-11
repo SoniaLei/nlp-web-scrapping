@@ -125,10 +125,7 @@ class Pipelines:
 
             self.experiments.add_experiment(exp_name=name,
                                             predictions=predictions)
-
-            # TODO is the below needed? Maybe for saving to csv?
-            self.predictions[name] = predictions
-
+    @property
     def collect_experiments(self):
         return self.experiments
 
