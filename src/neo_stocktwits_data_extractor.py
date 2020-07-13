@@ -101,11 +101,11 @@ def main():
             print('table laid')
 
             if data:
-                if not os.path.isfile('../data/raw/scrapedtweets.csv'):
-                    df.to_csv('../data/raw/scrapedtweets.csv', index=False, encoding='utf-8')
+                if not os.path.isfile('../data/raw/neoscrapedtweets.csv'):
+                    df.to_csv('../data/raw/neoscrapedtweets.csv', index=False, encoding='utf-8')
                 else: # else it exists so append without writing the header
-                    df.to_csv('../data/raw/scrapedtweets.csv', mode='a', header=False, index=False)
-                print(f"{len(df)} tweets written to scrapedtweets.csv")
+                    df.to_csv('../data/raw/neoscrapedtweets.csv', mode='a', header=False, index=False)
+                print(f"{len(df)} tweets written to neoscrapedtweets.csv")
 
             print('Going to sleep.', refresh_attempts, 'refreshes left.\n', len(messageChecklist), 'tweets scraped so far this session.')
             refresh_attempts-=1
