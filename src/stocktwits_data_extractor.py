@@ -55,7 +55,7 @@ def main():
             print('scrolling... ',no_of_pagedowns, ' to go')
 
         time_between_refreshes = 30
-        refresh_attempts = 10
+        refresh_attempts = 120*70
         while refresh_attempts:
 
             data = []
