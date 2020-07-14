@@ -3,8 +3,8 @@ Context module to Validate conf.yml file, initialize context component objects,
 and store those as context attributes ready to be injected to pipelines.
 """
 from datetime import datetime
-from mlpipeline.utiles import validate_path, read_config_file
-from mlpipeline.components import Data, Transformers, Vectorizers, Estimators
+from .utiles import validate_path, read_config_file
+from .components import Data, Transformers, Vectorizers, Estimators
 
 
 class Context:
