@@ -1,11 +1,11 @@
 """
 Experiment module to create, run and store experiments' artifacts.
 """
-import numpy as np
+import tempfile
 from itertools import combinations
 from .metrics import Metrics
 import mlflow
-import tempfile
+import numpy as np
 
 
 class Experiment:
@@ -30,8 +30,6 @@ class Experiment:
 
     @name.setter
     def name(self, value):
-        if isinstance(value, tuple):
-            value = "__".join(value)
         self._name = value
 
     @property
@@ -43,7 +41,12 @@ class Experiment:
         self._predictions = value
 
     def save_to_mlflow(self):
-        mlflow.set_tracking_uri(Experiment.mlflow_uri_path)
+        #mlflow.set_tracking_uri(Experiment.mlflow_uri_path)
+        print("mlflow_uri_path.join(self.name)  --> ", self.mlflow_uri_path.join(self.name))
+        mlflow.set_experiment(self.mlflow_uri_path.join(self.name))
+
+       # print(mlflow.get_artifact_uri())
+      #  print(mlflow.get_tracking_uri())
 
         with mlflow.start_run(run_name=self.name):
             mlflow.log_param('Exp name', self.metrics.exp_name)
@@ -63,6 +66,7 @@ class Experiment:
                 mlflow.log_artifact(tmpfile.name)
 
         self.saved = True
+        print(f"Experiment name ({self.name}) has been saved in MlFlow.")
 
 
 class Experiments:
@@ -85,16 +89,14 @@ class Experiments:
 
         self.collection[exp_name] = experiment
 
-    def save_exp_combinations(self, experiments_dict):
+    def save_experiments(self, experiments=None):
+        experiments = experiments or self.collection
+        for name, exp in experiments.items():
+            exp.save_to_mlflow()
 
-        for name, predictions in experiments_dict.items():
-            self.add_experiment(exp_name=name,
-                                predictions=predictions)
-
-    def compute_exp_combinations(self):
+    def add_experiment_combinations(self):
 
         combined_models_names = []
-        combined_models = {}
         # we start at 1 since we want only aggregation of results
         # from 2+ models.
         num_models = list(range(1, len(self.collection.keys())))
@@ -115,5 +117,9 @@ class Experiments:
                 prob_weighted = self.collection[model].predictions * weight
                 probabilities += prob_weighted
 
-            combined_models[combined_model] = probabilities
-        return combined_models
+            combined_model_name = "__".join(combined_model)
+
+            self.add_experiment(exp_name=combined_model_name,
+                                predictions=probabilities)
+
+        return self
