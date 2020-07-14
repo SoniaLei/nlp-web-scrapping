@@ -42,7 +42,7 @@ class Experiment:
 
     def save_to_mlflow(self):
         #mlflow.set_tracking_uri(Experiment.mlflow_uri_path)
-        print("mlflow_uri_path.join(self.name)  --> ", self.mlflow_uri_path.join(self.name))
+        # print("mlflow_uri_path.join(self.name)  --> ", self.mlflow_uri_path.join(self.name))
         mlflow.set_experiment(self.mlflow_uri_path.join(self.name))
 
        # print(mlflow.get_artifact_uri())
@@ -50,23 +50,20 @@ class Experiment:
 
         with mlflow.start_run(run_name=self.name):
             mlflow.log_param('Exp name', self.metrics.exp_name)
-            mlflow.log_param('f1 score', self.metrics.f1_score())
+            mlflow.log_param('f1 score', self.metrics.f1_score)
             mlflow.log_metric('accuracy', self.metrics.accuracy_score)
 
-            for plot in [self.metrics.plot_confusion_matrix(), self.metrics.plot_model_roc()]:
+            for plot in [self.metrics.plot_confusion_matrix(),
+                         self.metrics.plot_single_roc_curve(),
+                         self.metrics.plot_multi_label_roc_curves()]:
 
                 with tempfile.NamedTemporaryFile(suffix=".png", prefix="Plot_", delete=False) as tmpfile:
                     plot.savefig(tmpfile, format='png')
                     tmpfile.seek(0)
                     mlflow.log_artifact(tmpfile.name)
 
-            with tempfile.NamedTemporaryFile(suffix=".png", prefix="Plot_", delete=False) as tmpfile:
-                self.metrics.plot_classes_roc().savefig(tmpfile, format='png')
-                tmpfile.seek(0)
-                mlflow.log_artifact(tmpfile.name)
-
         self.saved = True
-        print(f"Experiment name ({self.name}) has been saved in MlFlow.")
+        print(f"Experiment name {self.name} has been saved in MlFlow.\n")
 
 
 class Experiments:
@@ -105,6 +102,11 @@ class Experiments:
             # combinations from 2+ models results.
             combination = combinations(self.collection.keys(), num_model + 1)
             combined_models_names.extend(list(combination))
+
+        print("Number of combined/aggregated ml results: ", len(combined_models_names))
+        print("Combined Model Names: ")
+        [print("- ", "__".join(name)) for name in combined_models_names]
+        print("\n")
 
         for num, combined_model in enumerate(combined_models_names):
             num_models = len(combined_model)

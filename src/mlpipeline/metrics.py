@@ -109,7 +109,7 @@ class Metrics(BasicMetrics):
     @property
     def f1_score(self):
         """By default pipeline uses average='weighted'."""
-        return f1_score(self.test_Y, self.prediction_labels)
+        return f1_score(self.test_Y, self.prediction_labels, average='weighted')
 
     @property
     def roc_auc_score(self):
@@ -190,8 +190,9 @@ class Metrics(BasicMetrics):
         return plt
 
     def calculate_macro_rates(self):
-        if not all([self._tpr.get(i) for i in range(len(self.classes))]):
-            self.calculate_micro_rates()
+        # Ensure micro rates have been calculated
+        # if not all([self._tpr.get(i) for i in range(len(self.classes))]):
+        #     self.calculate_micro_rates()
 
         all_fpr = np.unique(np.concatenate([self._fpr[i] for i in range(len(self.classes))]))
         mean_tpr = np.zeros_like(all_fpr)
@@ -209,7 +210,10 @@ class Metrics(BasicMetrics):
                          xlabel='False Positive Rate', ylabel='True Positive Rate',
                          title='Receiver operating characteristic to multi-class',
                          legend_loc="lower right", lw=2, figsize=(20, 10)):
-        """Plots multiple lines one for each class. """
+        """
+        Plots multiple lines one for each class.
+        Ensure before plotting multiple traces, that micro rates have been calculated.
+        Plot single roc curve first and after multilabel roc curves"""
 
         self.calculate_macro_rates()
         d = list(enumerate(self.classes))

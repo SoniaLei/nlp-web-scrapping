@@ -1,5 +1,4 @@
-from mlpipeline.context import Context
-from mlpipeline.pipeline import Pipelines
+from mlpipeline import *
 import argparse
 import sys
 import os
@@ -27,23 +26,54 @@ def main():
     if not os.path.exists(args.config_file):
         raise FileNotFoundError(f"{args.config_file} is not found in the root filesystem.")
 
-    config_context = Context(exp_name=args.file_name, conf_file=args.config_file)
+    print(f"Reading configurations for experiment in path: {args.config_file}.")
+    context = Context(exp_name=args.file_name, conf_file=args.config_file)
 
-
-
-
-if __name__ == '__main__':
-    print("Starting ml pipeline program.")
-    #main() # Main() reads arguments being passed to the script.
-    context = Context('', conf_file='experiment_configs/exp005.yml')
-    print(f"Reading configurations for experiment: {context.exp_name}.")
+    print("Setting nlp pipelines from conf file.")
     pipelines = Pipelines(exp_name=context.exp_name,
                           data=context.data,
                           transformers=context.transformers,
                           vectorizers=context.vectorizers,
                           estimators=context.estimators)
-    pipelines.start_runs(safe_run=True)
-    experiments = pipelines.collect_experiments()
-    exp_combinations = experiments.compute_exp_combinations()
-    experiments.save_exp_combinations(exp_combinations)
 
+    print("Number of Pipelines created: ", len(pipelines))
+    print("Pipeline names: ")
+    [print("- ", name) for name in pipelines.names]
+    print("\n")
+
+    print("Fitting and predicting pipelines.")
+    experiments = pipelines.start_runs(safe_run=True)
+
+    # computes and saves each experiment
+    experiments.add_experiment_combinations()
+
+    print("End of pipeline. ")
+
+
+
+if __name__ == '__main__':
+    print("Starting ml pipeline program.")
+    main()  # Main() reads arguments being passed to the script.
+
+    # TESTING PURPOSES WITHOUT PASSING ARGS
+    # context = Context('', conf_file='experiment_configs/exp005.yml')
+    #
+    # pipelines = Pipelines(exp_name=context.exp_name,
+    #                       data=context.data,
+    #                       transformers=context.transformers,
+    #                       vectorizers=context.vectorizers,
+    #                       estimators=context.estimators)
+    # # fits and predicts each pipeline created from config file.
+    # experiments = pipelines.start_runs(safe_run=True)
+    #
+
+    # EXAMPLE SAVING At THE END
+    # experiments = pipelines.start_runs(safe_run=False)
+    # experiments = experiments.add_experiment_combinations()
+    # for exp_name, exp in experiments.collection.items():
+    #     print(exp_name, exp.saved)
+    # experiments.save_experiments()
+
+
+
+#os.getcwdb()

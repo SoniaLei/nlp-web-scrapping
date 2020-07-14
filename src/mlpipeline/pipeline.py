@@ -29,7 +29,7 @@ class Pipelines:
         self.transformers = transformers
         self.vectorizers = vectorizers
         self.estimators = estimators
-        self.cv_keyword = 'cvs'
+        self.cv_keyword = cv_keyword
 
         self.names = self.set_pipelines_names()
         self.sequences = self.set_pipelines_lists()
@@ -125,9 +125,10 @@ class Pipelines:
 
             self.experiments.add_experiment(exp_name=name,
                                             predictions=predictions)
-    @property
-    def collect_experiments(self):
         return self.experiments
+
+    def __len__(self):
+        return len(self.names)
 
 
 class Pipeline:
