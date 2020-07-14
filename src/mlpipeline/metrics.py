@@ -1,4 +1,7 @@
-from sklearn.metrics import accuracy_score, classification_report, plot_confusion_matrix, confusion_matrix, f1_score, auc, roc_curve
+"""
+Metrics module to evaluate and assess/gauge nlp ml model performance.
+"""
+from sklearn.metrics import accuracy_score, classification_report, confusion_matrix, f1_score, auc, roc_curve, roc_auc_score, average_precision_score
 from sklearn.preprocessing import LabelBinarizer
 import itertools
 import pandas as pd
@@ -8,7 +11,7 @@ from itertools import cycle
 
 
 class BasicMetrics:
-
+    """Basic class responsible to set basic Metrics attr."""
     def __init__(self, exp_name, classes, test_Y, predictions, output_path):
         self.exp_name = exp_name
         self.classes = classes
@@ -74,7 +77,9 @@ class BasicMetrics:
 
 
 class Metrics(BasicMetrics):
-
+    """
+    Metrics class to get main sklearn classification ml metrics.
+    """
     def __init__(self, exp_name, classes, test_Y, predictions, output_path='../data/results/'):
         super().__init__(exp_name, classes, test_Y, predictions, output_path=output_path)
         self._fpr = dict()
@@ -85,12 +90,13 @@ class Metrics(BasicMetrics):
     def summary_report(self):
         return NotImplemented
 
-    def f1_score(self, average='weighted'):
-        return f1_score(self.test_Y, self.prediction_labels, average=average)
-
     @property
     def accuracy_score(self):
         return accuracy_score(self.test_Y, self.prediction_labels)
+
+    @property
+    def average_precision_score(self):
+        return average_precision_score(self.test_Y, self.prediction_labels)
 
     @property
     def classification_report(self):
@@ -100,6 +106,16 @@ class Metrics(BasicMetrics):
     def confusion_matrix(self):
         return confusion_matrix(self.test_Y, self.prediction_labels)
 
+    @property
+    def f1_score(self):
+        """By default pipeline uses average='weighted'."""
+        return f1_score(self.test_Y, self.prediction_labels)
+
+    @property
+    def roc_auc_score(self):
+        """By default pipeline uses average='macro'."""
+        return roc_auc_score(self.test_Y, self.prediction_labels)
+
     def plot_confusion_matrix(self, figsize=(8, 8),
                               labels=None,
                               title='Confusion Matrix of the Classifier\n',
@@ -108,11 +124,10 @@ class Metrics(BasicMetrics):
         if labels is None:
             labels = ['positive', 'neutral', 'negative']
 
-        cm = confusion_matrix(self.test_Y, self.prediction_labels)
-
         fig = plt.figure(figsize=figsize)
-
         ax = fig.add_subplot(111)
+
+        cm = self.confusion_matrix
         cax = ax.matshow(cm)
 
         plt.title(title)
@@ -154,7 +169,7 @@ class Metrics(BasicMetrics):
         self._fpr["micro"], self._tpr["micro"], _ = roc_curve(binary_y_test.ravel(), self.prediction_probabilities.ravel())
         self._roc_auc["micro"] = auc(self._fpr["micro"], self._tpr["micro"])
 
-    def plot_model_roc(self, color='darkorange', label='ROC curve (area = %0.2f)',
+    def plot_single_roc_curve(self, color='darkorange', label='ROC curve (area = %0.2f)',
                        xlabel='False Positive Rate', ylabel='True Positive Rate',
                        title='Receiver operating characteristic', legend_loc="lower right",
                        lw=2, figsize=(20, 10)):
@@ -175,8 +190,8 @@ class Metrics(BasicMetrics):
         return plt
 
     def calculate_macro_rates(self):
-        #if not all([self._tpr.get(i) for i in range(len(self.classes))]):
-        self.calculate_micro_rates()
+        if not all([self._tpr.get(i) for i in range(len(self.classes))]):
+            self.calculate_micro_rates()
 
         all_fpr = np.unique(np.concatenate([self._fpr[i] for i in range(len(self.classes))]))
         mean_tpr = np.zeros_like(all_fpr)
@@ -189,11 +204,12 @@ class Metrics(BasicMetrics):
         self._tpr["macro"] = mean_tpr
         self._roc_auc["macro"] = auc(self._fpr["macro"], self._tpr["macro"])
 
-    def plot_classes_roc(self, color_micro_avg='deeppink', color_macro_avg='navy',
+    def plot_multi_label_roc_curves(self, color_micro_avg='deeppink', color_macro_avg='navy',
                          color_classes=('aqua', 'darkorange', 'cornflowerblue'),
                          xlabel='False Positive Rate', ylabel='True Positive Rate',
                          title='Receiver operating characteristic to multi-class',
                          legend_loc="lower right", lw=2, figsize=(20, 10)):
+        """Plots multiple lines one for each class. """
 
         self.calculate_macro_rates()
         d = list(enumerate(self.classes))
