@@ -61,3 +61,11 @@ class GridSearch:
     @property
     def best_estimator(self):
         return self.sk_gridsearch.best_estimator_
+
+    @property
+    def cv_results(self):
+        return self.sk_gridsearch.cv_results_
+
+    @property
+    def best_score(self):
+        return self.sk_gridsearch.best_score_
