@@ -106,6 +106,8 @@ class Pipelines:
         fitting the next pipeline. Otherwise, fits/predicts all pipelines and
         saves all pipelines results at the end.
         """
+        # Setting Experiments safe_run as a default!
+        # TODO maybe have this one in config file?
         Experiments.runtime_save = safe_run
         Experiments.test_Y = self.data.test_Y
 
@@ -124,7 +126,9 @@ class Pipelines:
                 Experiments.classes = gridsearch.classes
 
             self.experiments.add_experiment(exp_name=name,
-                                            predictions=predictions)
+                                            predictions=predictions,
+                                            gridsearch=gridsearch,
+                                            is_aggregated_model=False)
         return self.experiments
 
     def __len__(self):
