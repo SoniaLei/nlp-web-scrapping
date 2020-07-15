@@ -94,13 +94,14 @@ class Metrics(BasicMetrics):
     def accuracy_score(self):
         return accuracy_score(self.test_Y, self.prediction_labels)
 
+    # I believe precision score does not work for multiclass classification
     @property
     def average_precision_score(self):
         return average_precision_score(self.test_Y, self.prediction_labels)
 
     @property
     def classification_report(self):
-        return classification_report(self.test_Y, self.prediction_labels)
+        return classification_report(self.test_Y, self.prediction_labels, output_dict=True)
 
     @property
     def confusion_matrix(self):
@@ -108,19 +109,25 @@ class Metrics(BasicMetrics):
 
     @property
     def f1_score(self):
-        """By default pipeline uses average='weighted'."""
+        """
+        By default pipeline uses average='weighted'.
+        """
         return f1_score(self.test_Y, self.prediction_labels, average='weighted')
 
     @property
     def roc_auc_score(self):
-        """By default pipeline uses average='macro'."""
+        """
+        By default pipeline uses average='macro'.
+        """
         return roc_auc_score(self.test_Y, self.prediction_labels)
 
     def plot_confusion_matrix(self, figsize=(8, 8),
                               labels=None,
                               title='Confusion Matrix of the Classifier\n',
                               xlabel='Predicted', ylabel='True'):
-
+        """
+        Returns a confusin matrix figure.
+        """
         if labels is None:
             labels = ['positive', 'neutral', 'negative']
 
@@ -147,20 +154,27 @@ class Metrics(BasicMetrics):
 
         return fig
 
+    # Left this here for now. If not needed we can delete it immediately.
     def dump_results_csv(self):
         data = pd.DataFrame({'test_Y': self.test_Y, 'Y_hat': self.prediction_labels})
         data.to_csv(self.output_path + self.exp_name + self.file_extension)
 
     @staticmethod
-    def get_binary_labels(labels):
+    def _get_binary_labels(labels):
+        """
+        Transforms class `str` labels into numerical 0,1.
+        """
         lb = LabelBinarizer()
         return lb.fit_transform(labels)
 
-    def calculate_micro_rates(self):
+    def _calculate_micro_rates(self):
+        """
+        Calculates micro rates for roc plots purposes.
+        """
         if self.prediction_probabilities is None:
             raise Exception("Could not find probabilities for model results")
 
-        binary_y_test = Metrics.get_binary_labels(self.test_Y)
+        binary_y_test = Metrics._get_binary_labels(self.test_Y)
 
         for i in range(len(self.classes)):
             self._fpr[i], self._tpr[i], _ = roc_curve(binary_y_test[:, i], self.prediction_probabilities[:, i])
@@ -173,11 +187,13 @@ class Metrics(BasicMetrics):
                        xlabel='False Positive Rate', ylabel='True Positive Rate',
                        title='Receiver operating characteristic', legend_loc="lower right",
                        lw=2, figsize=(20, 10)):
-
+        """
+        Returns one plot with one single trace showing overall model performance.
+        """
         if not self._fpr.get('micro') and not self._tpr.get('micro'):
-            self.calculate_micro_rates()
+            self._calculate_micro_rates()
 
-        plt.figure(figsize=figsize)
+        fig = plt.figure(figsize=figsize)
         plt.plot(self._fpr[2], self._tpr[2], color=color,
                  lw=lw, label=label % self._roc_auc[2])
         plt.plot([0, 1], [0, 1], color='navy', lw=lw, linestyle='--')
@@ -187,9 +203,13 @@ class Metrics(BasicMetrics):
         plt.ylabel(ylabel)
         plt.title(title)
         plt.legend(loc=legend_loc)
-        return plt
+        return fig
 
-    def calculate_macro_rates(self):
+    def _calculate_macro_rates(self):
+        """
+        Calculates macro rates for multi label roc curves plots.
+        """
+        # Elia: TO have a look
         # Ensure micro rates have been calculated
         # if not all([self._tpr.get(i) for i in range(len(self.classes))]):
         #     self.calculate_micro_rates()
@@ -211,14 +231,15 @@ class Metrics(BasicMetrics):
                          title='Receiver operating characteristic to multi-class',
                          legend_loc="lower right", lw=2, figsize=(20, 10)):
         """
-        Plots multiple lines one for each class.
-        Ensure before plotting multiple traces, that micro rates have been calculated.
-        Plot single roc curve first and after multilabel roc curves"""
-
-        self.calculate_macro_rates()
+        Plots multiple lines/traces one for each class found in the classification problem.
+        Plot single roc curve first and after multilabel roc curves
+        """
+        # Elia: TO have a look
+        #  Ensure before plotting multiple traces, that micro rates have been calculated.
+        self._calculate_macro_rates()
         d = list(enumerate(self.classes))
 
-        plt.figure(figsize=figsize)
+        fig = plt.figure(figsize=figsize)
         plt.plot(self._fpr["micro"], self._tpr["micro"],
                  label='micro-average ROC curve (area = {0:0.2f})'
                        ''.format(self._roc_auc["micro"]),
@@ -242,4 +263,4 @@ class Metrics(BasicMetrics):
         plt.ylabel(ylabel)
         plt.title(title)
         plt.legend(loc=legend_loc)
-        return plt
+        return fig
