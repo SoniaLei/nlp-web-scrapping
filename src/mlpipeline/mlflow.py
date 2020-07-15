@@ -1,3 +1,7 @@
+"""
+Mlflow module providing MlFlow plug to log experiments.
+Experiments made on parameters, metrics, artifacts and tags.
+"""
 import mlflow
 import mlflow.sklearn
 from tempfile import NamedTemporaryFile
