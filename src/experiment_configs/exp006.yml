@@ -4,8 +4,8 @@
 
 # Location of data files
 data:
-  train: "https://raw.githubusercontent.com/SoniaLei/nlp-web-scrapping/development/data/raw/tweets-train.csv"
-  test: "https://raw.githubusercontent.com/SoniaLei/nlp-web-scrapping/development/data/raw/tweets-test.csv"
+  train: "../data/testing/testing-tweets-train.csv"
+  test: "../data/testing/testing-tweets-test.csv"
   features: "text"
   target: "sentiment"
 
