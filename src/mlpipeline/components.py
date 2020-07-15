@@ -19,13 +19,11 @@ class Data:
         """
         self._train = pd.read_csv(train)
         self._test = pd.read_csv(test)
-        self._train.dropna(inplace=True)
-        self._test.dropna(inplace=True)
-        # slicing for testing purposes
-        self.train_X = self._train[features][:3000]
-        self.train_Y = self._train[target][:3000]
-        self.test_X = self._test[features][3000:5000]
-        self.test_Y = self._test[target][3000:5000]
+
+        self.train_X = self._train[features]
+        self.train_Y = self._train[target]
+        self.test_X = self._test[features]
+        self.test_Y = self._test[target]
 
 
 class CompositeConstructor:
