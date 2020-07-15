@@ -50,30 +50,10 @@ def main():
     print("End of pipeline. ")
 
 
-
+# Remember to run this experiment using
+# python run.py -cf experiment_configs/exp005.yml
+# as an example
 if __name__ == '__main__':
+    print("\n")
     print("Starting ml pipeline program.")
-    main()  # Main() reads arguments being passed to the script.
-
-    # TESTING PURPOSES WITHOUT PASSING ARGS
-    # context = Context('', conf_file='experiment_configs/exp005.yml')
-    #
-    # pipelines = Pipelines(exp_name=context.exp_name,
-    #                       data=context.data,
-    #                       transformers=context.transformers,
-    #                       vectorizers=context.vectorizers,
-    #                       estimators=context.estimators)
-    # # fits and predicts each pipeline created from config file.
-    # experiments = pipelines.start_runs(safe_run=True)
-    #
-
-    # EXAMPLE SAVING At THE END
-    # experiments = pipelines.start_runs(safe_run=False)
-    # experiments = experiments.add_experiment_combinations()
-    # for exp_name, exp in experiments.collection.items():
-    #     print(exp_name, exp.saved)
-    # experiments.save_experiments()
-
-
-
-#os.getcwdb()
+    main()
