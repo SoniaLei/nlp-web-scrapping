@@ -3,7 +3,7 @@ Factory class to register and instantiate objects.
 """
 from sklearn.linear_model import LogisticRegression
 from sklearn.naive_bayes import MultinomialNB
-from sklearn.ensemble import RandomForestClassifier
+from sklearn.ensemble import RandomForestClassifier, GradientBoostingClassifier
 from sklearn.feature_extraction.text import CountVectorizer, TfidfVectorizer
 from sklearn.svm import SVC
 from .transformers import *
@@ -28,6 +28,7 @@ class ObjectFactory:
         'MultinomialNB': MultinomialNB,
         'LogisticRegression': LogisticRegression,
         'RandomForestClassifier': RandomForestClassifier,
+        'GradientBoostingClassifier': GradientBoostingClassifier,
     }
 
     @classmethod
