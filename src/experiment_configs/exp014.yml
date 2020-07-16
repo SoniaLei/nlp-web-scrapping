@@ -18,4 +18,4 @@ estimators:
   LogisticRegression:
     cv: 3
     params:
-      solver: 'newton-cg'
+      solver: 'saga'
