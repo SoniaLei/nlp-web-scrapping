@@ -69,13 +69,14 @@ class MlFlow:
         """
         Get experiment_id using self.exp_folder
         """
+
         if name is None:
             experiment_id = None
 
         else:
             # Get experiment_id from already created experiment name -> 'NLP'
             try:
-                mlflow.get_experiment_by_name(name).experiment_id
+                exp_id = mlflow.get_experiment_by_name(name).experiment_id
                 # Inputs:
                     # name = the experiment's name
                 # Returns: Experiment object
@@ -83,11 +84,13 @@ class MlFlow:
 
             # Create new experiment and get experiment_id
             except AttributeError:  # Error: if experiment doesn't exist ...
-                mlflow.create_experiment(name)
+                exp_id = mlflow.create_experiment(name)
+
                 # Inputs:
                     # name = the experiment's name (unique)
                     # artifact_location (optional) = location to store run artifacts
                 # Returns: integer Id of the experiment
+            return exp_id
 
 #-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-
 
@@ -130,10 +133,11 @@ class MlFlow:
         mlflow.set_tracking_uri(self.tracking_uri)
         # Getting experiment_id
         # Does create new folder for each new experiment_id
-        self.set_experiment_id(self.exp_folder)
+        id = self.set_experiment_id(self.exp_folder)
 
         # Start mlflow():
-        with mlflow.start_run(run_name=self.experiment_name):
+        with mlflow.start_run(run_name=self.experiment_name, experiment_id=id):
+            # TODO investigate how to not create a default experiment_id num 0.
 
             # Tags
             mlflow.set_tag('combined_models', is_aggregated)
