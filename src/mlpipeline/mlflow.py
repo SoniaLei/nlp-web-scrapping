@@ -67,12 +67,12 @@ class MLFlow:
 
                 print("Not in 'None'")
 
-                filepath_list = tracking_uri.split("/")
+                filepath_list = tracking_uri.split("\\")
 
                 # The uri needs to end with the mlruns folder
                 if filepath_list[-1] != "mlruns":
 
-                    tracking_uri += "/mlruns"
+                    tracking_uri += "\mlruns"
 
                 # To set, uri needs "file:///" at the start
                 #uri = "file:///" + str(tracking_uri)

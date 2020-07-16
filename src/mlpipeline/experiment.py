@@ -14,7 +14,7 @@ class Experiment:
     #mlflow_uri_path = '$PROJECT_PATHS$/../../mlruns'
     
     path = abspath(dirname(""))    
-    mlflow_uri_path = path.split("nlp-web-scrapping")[0] + "nlp-web-scrapping/mlruns"
+    mlflow_uri_path = path.split("nlp-web-scrapping")[0] + "nlp-web-scrapping\mlruns"
     
     print("\nURI:\n",mlflow_uri_path,"\n")
         
