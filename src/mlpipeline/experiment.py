@@ -12,9 +12,6 @@ class Experiment:
     """
     Experiment class that orchestrates the execution of an experiment.
     """
-    # '$PROJECT_PATHS$/../../mlruns'
-    path = os.path.abspath(os.path.dirname(""))
-    mlflow_uri_path = path.split("nlp-web-scrapping")[0] + "nlp-web-scrapping/mlruns"
 
     def __init__(self, name, predictions, gridsearch, is_aggregated_model, classes, test_Y):
         self.name = name
@@ -43,6 +40,16 @@ class Experiment:
     @predictions.setter
     def predictions(self, value):
         self._predictions = value
+
+    @property
+    def abs_mlruns_path(self):
+        path = os.path.abspath(os.path.dirname(""))
+        mlflow_uri_path = path.split("nlp-web-scrapping")[0]
+        separator = "\\"
+        if "/" in mlflow_uri_path:
+            separator = '/'
+        mlflow_uri_path = mlflow_uri_path + "nlp-web-scrapping" + separator + "mlruns"
+        return mlflow_uri_path
 
     def get_parameters_dict(self):
         """
@@ -94,7 +101,7 @@ class Experiment:
         aggregation of other models.
         """
         # TODO check if works for Nat and Ernest mlflow_uri_path
-        mlflow = MlFlow(self.name, self.mlflow_uri_path)
+        mlflow = MlFlow(self.name, self.abs_mlruns_path)
         # TODO params dict will be empty for combined models results
         # address in next sprint if needed
         mlflow.logging(params_dictionary=self.get_parameters_dict(),
