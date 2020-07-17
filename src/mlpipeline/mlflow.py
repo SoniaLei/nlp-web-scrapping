@@ -46,12 +46,17 @@ class MlFlow:
         if not isinstance(uri, str):
             raise TypeError("Input needs to be a String")
 
+        separator = "\\"
+
+        if "/" in uri:
+            separator = '/'
+
         print("Tracking_uri: " + str(uri))
-        filepath_list = uri.split("/")
+        filepath_list = uri.split(separator)
 
         # The uri needs to end with the mlruns folder
         if filepath_list[-1] != "mlruns":
-            uri += "/mlruns"
+            uri += separator + "mlruns"
 
         # To set, uri needs "file:///" at the start
         uri = "file:/" + str(uri)
