@@ -6,6 +6,7 @@ import mlflow
 import mlflow.sklearn
 from tempfile import NamedTemporaryFile
 import os
+import matplotlib.pyplot as plt
 
 #-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-
 
@@ -112,6 +113,8 @@ class MlFlow:
         )
 
         artifact.savefig(tmpfile)
+
+        plt.close(artifact)
 
         tmpfile.close()
 
