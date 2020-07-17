@@ -1,16 +1,31 @@
 import os
 import pandas as pd
 import re
+import sys
 import time
+import keyboard
+#from pynput import keyboard
 from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
 from selenium.common.exceptions import NoSuchElementException
 from bs4 import BeautifulSoup
 
+def detectQuit():
+    print('ctrl+q detected. Finishing up...')
+    global quitting
+    quitting = True
 
 def main():
 
     try:
+
+        keyboard.add_hotkey('ctrl+q', detectQuit)
+
+        global quitting
+        quitting = False
+
+        # with keyboard.GlobalHotKeys({'<ctrl>+q': detectQuit}) as h:
+        #     h.join()
 
         if not os.path.isdir('../data/raw'):
             os.mkdir('../data/raw')
@@ -107,6 +122,9 @@ def main():
                     df.to_csv('../data/raw/neoscrapedtweets.csv', mode='a', header=False, index=False)
                 print(f"{len(df)} tweets written to neoscrapedtweets.csv")
 
+            if quitting:
+                break
+
             print('Going to sleep.', refresh_attempts, 'refreshes left.\n', len(messageChecklist), 'tweets scraped so far this session.')
             refresh_attempts-=1
             time.sleep(time_between_refreshes)
@@ -129,7 +147,7 @@ def main():
         driver.quit()
         print('driver quit')
 
-    input('Press ENTER to exit')
-
 if __name__ == '__main__':
+
     main()
+    sys.exit()
