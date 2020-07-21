@@ -4,7 +4,7 @@ import re
 import sys
 import time
 import keyboard
-#from pynput import keyboard
+import argparse
 from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
 from selenium.common.exceptions import NoSuchElementException
@@ -19,18 +19,24 @@ def main():
 
     try:
 
+        parser = argparse.ArgumentParser(description='Optional arguments')
+        parser.add_argument(
+            '-t',
+            '--time',
+            type=int,
+            default=30,
+            help='the number of minutes you want the script to run for (default: 30)'
+            )
+        optionalArgs = parser.parse_args()
+
         keyboard.add_hotkey('ctrl+q', detectQuit)
 
         global quitting
         quitting = False
 
-        # with keyboard.GlobalHotKeys({'<ctrl>+q': detectQuit}) as h:
-        #     h.join()
-
         if not os.path.isdir('../data/raw'):
             os.mkdir('../data/raw')
 
-        #data = []
         messageChecklist = []
 
         #Target company symbol (e.g. AAPL for Apple Inc.)
@@ -70,7 +76,7 @@ def main():
             print('scrolling... ',no_of_pagedowns, ' to go')
 
         time_between_refreshes = 30
-        refresh_attempts = 120*70
+        refresh_attempts = optionalArgs.time*2
         while refresh_attempts:
 
             data = []
