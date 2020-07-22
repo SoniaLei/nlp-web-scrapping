@@ -6,6 +6,7 @@ import mlflow
 import mlflow.sklearn
 from tempfile import NamedTemporaryFile
 import os
+import matplotlib.pyplot as plt
 
 #-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-
 
@@ -40,21 +41,26 @@ class MlFlow:
         return self._tracking_uri
 
     @tracking_uri.setter
-    def tracking_uri(self, uri):
-        """filepath the results folder will be saved in"""
+    def tracking_uri(self, path):
+        """
+        Returns the abs path to mlruns folder
+        using the correxct `/` or `\` slide.
+        """
 
-        if not isinstance(uri, str):
+        if not isinstance(path, str):
             raise TypeError("Input needs to be a String")
 
-        print("Tracking_uri: " + str(uri))
-        filepath_list = uri.split("/")
+        mlflow_uri_path = path.split("nlp-web-scrapping")[0]
+
+        separator = "\\"
+        if "/" in mlflow_uri_path:
+            separator = '/'
 
         # The uri needs to end with the mlruns folder
-        if filepath_list[-1] != "mlruns":
-            uri += "/mlruns"
+        mlflow_uri_path = mlflow_uri_path + "nlp-web-scrapping" + separator + "mlruns"
 
         # To set, uri needs "file:///" at the start
-        uri = "file:/" + str(uri)
+        uri = "file:/" + str(mlflow_uri_path)
 
         self._tracking_uri = uri
 
@@ -107,6 +113,8 @@ class MlFlow:
         )
 
         artifact.savefig(tmpfile)
+
+        plt.close(artifact)
 
         tmpfile.close()
 

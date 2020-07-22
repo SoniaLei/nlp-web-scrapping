@@ -51,7 +51,7 @@ def main():
 
 
 # Remember to run this experiment using
-# python run.py -cf experiment_configs/exp005.yml
+# python run.py -cf experiment_configs/exp009.yml
 # as an example
 if __name__ == '__main__':
     print("\n")
