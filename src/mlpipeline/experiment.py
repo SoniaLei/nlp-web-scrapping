@@ -43,16 +43,6 @@ class Experiment:
     def predictions(self, value):
         self._predictions = value
 
-    # @property
-    # def abs_mlruns_path(self):
-    #     path = os.path.abspath(os.path.dirname(""))
-    #     mlflow_uri_path = path.split("nlp-web-scrapping")[0]
-    #     separator = "\\"
-    #     if "/" in mlflow_uri_path:
-    #         separator = '/'
-    #     mlflow_uri_path = mlflow_uri_path + "nlp-web-scrapping" + separator + "mlruns"
-    #     return mlflow_uri_path
-
     def get_parameters_dict(self):
         """
         Gets gridSearch best estimator model and
