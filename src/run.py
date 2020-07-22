@@ -54,4 +54,6 @@ def main():
 # python run.py -cf experiment_configs/exp009.yml
 # as an example
 if __name__ == '__main__':
+    print("\n")
+    print("Starting ml pipeline program.")
     main()
