@@ -75,6 +75,9 @@ def main():
             no_of_pagedowns-=1
             print('scrolling... ',no_of_pagedowns, ' to go')
 
+        #time_between_refreshes is 30 seconds, so refresh atempts is time multiplied by 2
+        #this is only an approximation of runtime,
+        #and so doesn't include time spent waiting for the page to refresh
         time_between_refreshes = 30
         refresh_attempts = optionalArgs.time*2
         while refresh_attempts:
