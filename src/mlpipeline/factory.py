@@ -14,15 +14,11 @@ class ObjectFactory:
 
     _registry = {
         # Transformers
-        'StopWordsRemoval': StopWordsRemoval,
-        'TweetCleaner': TweetCleaner,
-        'Lematization': Lematization,
         'Tokenizer': Tokenizer,
-        'TweetVectorizer': TweetVectorizer,
-        # Vectorizers
         'CountVectorizer': CountVectorizer,
         'TfidfVectorizer': TfidfVectorizer,
         'Word2VecVectorizer': Word2VecVectorizer,
+
         # Estimators classifiers
         'SVC': SVC,
         'MultinomialNB': MultinomialNB,
