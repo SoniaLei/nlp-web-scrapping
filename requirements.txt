@@ -10,3 +10,4 @@ wordcloud
 beautifulsoup4
 pytest
 pytest-cov
+gensim
