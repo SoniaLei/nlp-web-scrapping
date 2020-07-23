@@ -26,7 +26,7 @@ def main():
             type=int,
             default=30,
             help='the number of minutes you want the script to run for (default: 30)'
-            )
+        )
         parser.add_argument(
             '-o',
             '--overwrite',
@@ -42,7 +42,6 @@ def main():
         )
         optionalArgs = parser.parse_args()
 
-        print(optionalArgs.overwrite)
         keyboard.add_hotkey('ctrl+q', detectQuit)
 
         global quitting
@@ -139,7 +138,7 @@ def main():
             print('table laid')
 
             if data:
-                if not os.path.isfile('../data/raw/'+optionalArgs.name):
+                if optionalArgs.overwrite or not os.path.isfile('../data/raw/'+optionalArgs.name):
                     df.to_csv('../data/raw/'+optionalArgs.name, index=False, encoding='utf-8')
                 else: # else it exists so append without writing the header
                     df.to_csv('../data/raw/'+optionalArgs.name, mode='a', header=False, index=False)
