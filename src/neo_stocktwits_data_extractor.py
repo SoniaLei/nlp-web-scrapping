@@ -26,7 +26,20 @@ def main():
             type=int,
             default=30,
             help='the number of minutes you want the script to run for (default: 30)'
-            )
+        )
+        parser.add_argument(
+            '-o',
+            '--overwrite',
+            action='store_true',
+            help='overwrite the file instead of appending to it'
+        )
+        parser.add_argument(
+            '-n',
+            '--name',
+            type=str,
+            default='neoscrapedtweets.csv',
+            help='custom file name'
+        )
         optionalArgs = parser.parse_args()
 
         keyboard.add_hotkey('ctrl+q', detectQuit)
@@ -125,11 +138,11 @@ def main():
             print('table laid')
 
             if data:
-                if not os.path.isfile('../data/raw/neoscrapedtweets.csv'):
-                    df.to_csv('../data/raw/neoscrapedtweets.csv', index=False, encoding='utf-8')
+                if optionalArgs.overwrite or not os.path.isfile('../data/raw/'+optionalArgs.name):
+                    df.to_csv('../data/raw/'+optionalArgs.name, index=False, encoding='utf-8')
                 else: # else it exists so append without writing the header
-                    df.to_csv('../data/raw/neoscrapedtweets.csv', mode='a', header=False, index=False)
-                print(f"{len(df)} tweets written to neoscrapedtweets.csv")
+                    df.to_csv('../data/raw/'+optionalArgs.name, mode='a', header=False, index=False)
+                print(f"{len(df)} tweets written to "+optionalArgs.name)
 
             if quitting:
                 break
