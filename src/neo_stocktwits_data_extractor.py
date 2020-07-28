@@ -51,6 +51,8 @@ def main():
             os.mkdir('../data/raw')
 
         messageChecklist = []
+        currentBullish = 0
+        currentBearish = 0
 
         #Target company symbol (e.g. AAPL for Apple Inc.)
         target = 'SPY'
@@ -112,6 +114,7 @@ def main():
                     print('No new tweets')
                     break
 
+            #    sentiment = 'null'
                 sentimentSpan = a.find('span', attrs={'class':'st_11GoBZI'})
                 if sentimentSpan is None:
                     continue
@@ -127,6 +130,11 @@ def main():
 
                 dateScraped = time.strftime("%Y/%m/%d", time.localtime())
                 timeScraped = time.strftime("%H:%M:%S", time.localtime())
+
+                if (sentiment == 'Bullish'):
+                    currentBullish += 1
+                elif (sentiment == 'Bearish'):
+                    currentBearish += 1
 
                 print(f"Sentiment: {sentiment}\nUser: {user}\nMessageId: {messageId}\nContent: {content}\nDate: {dateScraped}\nTime: {timeScraped}\n")
 
@@ -147,7 +155,8 @@ def main():
             if quitting:
                 break
 
-            print('Going to sleep.', refresh_attempts, 'refreshes left.\n', len(messageChecklist), 'tweets scraped so far this session.')
+            print('Going to sleep.', refresh_attempts, 'refreshes left.')
+            print('[Session] Total:', len(messageChecklist), ', Bullish:', currentBullish, ', Bearish:', currentBearish)
             refresh_attempts-=1
             time.sleep(time_between_refreshes)
 
