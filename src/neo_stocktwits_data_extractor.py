@@ -19,6 +19,7 @@ def main():
 
     try:
 
+        # Define optional arguments
         parser = argparse.ArgumentParser(description='Optional arguments')
         parser.add_argument(
             '-t',
@@ -42,37 +43,52 @@ def main():
         )
         optionalArgs = parser.parse_args()
 
+        # Set up ctrl+q hotkey
         keyboard.add_hotkey('ctrl+q', detectQuit)
-
         global quitting
         quitting = False
 
+        # check file path exists
         if not os.path.isdir('../data/raw'):
             os.mkdir('../data/raw')
 
+        # Initialise checklist and counters
         messageChecklist = []
         currentBullish = 0
         currentBearish = 0
+        sessionTweets = 0
+        existingBullish = 0
+        existingBearish = 0
+        existingTweets = 0
 
-        #Target company symbol (e.g. AAPL for Apple Inc.)
+        # Check file for existing data
+        if os.path.isfile('../data/raw/'+optionalArgs.name):
+            with open('../data/raw/'+optionalArgs.name, encoding='utf-8') as existingFile:
+                readCSV = pd.read_csv(existingFile, delimiter=',')
+                existingTweets = len(readCSV)
+                existingBearish = len(readCSV[readCSV['sentiment'] == 'Bearish'])
+                existingBullish = len(readCSV[readCSV['sentiment'] == 'Bullish'])
+                messageChecklist.extend(readCSV['message_id'].tolist())
+
+        # Target company symbol (e.g. AAPL for Apple Inc.)
         target = 'SPY'
 
         # #Stocktwits login details
         # username = 'nlpproject'
         # password = 'Voorburg20!'
 
-        #webdriver for selenium automation.
-        #Ensure correct webdrivers are installed and pathway is correct.
+        # webdriver for selenium automation.
+        # Ensure correct webdrivers are installed and pathway is correct.
         options = webdriver.FirefoxOptions()
         options.headless = False
         driver = webdriver.Firefox(options=options, executable_path='C:/Program Files/Mozilla Firefox/geckodriver.exe')
 
 
-        #get target company feed directly
+        # get target company feed directly
         driver.get('https://stocktwits.com/symbol/'+target)
 
 
-        #Accept cookies
+        # Accept cookies
         print('going to sleep')
         time.sleep(15)
         print('awake')
@@ -80,9 +96,9 @@ def main():
         element.send_keys(Keys.ENTER)
         print('cookies eaten')
 
-        #infinite scroll may work for powerful PCs, but doesn't seem to be an option here
-        #maybe attempt long scroll, append, and run the script again later?
-        #page down
+        # infinite scroll may work for powerful PCs, but doesn't seem to be an option here
+        # maybe attempt long scroll, append, and run the script again later?
+        # page down
         no_of_pagedowns = 10
         while no_of_pagedowns:
             element.send_keys(Keys.PAGE_DOWN)
@@ -90,9 +106,9 @@ def main():
             no_of_pagedowns-=1
             print('scrolling... ',no_of_pagedowns, ' to go')
 
-        #time_between_refreshes is 30 seconds, so refresh atempts is time multiplied by 2
-        #this is only an approximation of runtime,
-        #and so doesn't include time spent waiting for the page to refresh
+        # time_between_refreshes is 30 seconds, so refresh atempts is time multiplied by 2
+        # this is only an approximation of runtime,
+        # and so doesn't include time spent waiting for the page to refresh
         time_between_refreshes = 30
         refresh_attempts = optionalArgs.time*2
         while refresh_attempts:
@@ -114,7 +130,6 @@ def main():
                     print('No new tweets')
                     break
 
-            #    sentiment = 'null'
                 sentimentSpan = a.find('span', attrs={'class':'st_11GoBZI'})
                 if sentimentSpan is None:
                     continue
@@ -140,6 +155,7 @@ def main():
 
                 data.append((user, messageId, sentiment, content, dateScraped, timeScraped))
                 messageChecklist.append(messageId)
+                sessionTweets += 1
 
             df = pd.DataFrame(data, columns=['user', 'message_id', 'sentiment', 'content', 'date', 'time'])
 
@@ -156,7 +172,8 @@ def main():
                 break
 
             print('Going to sleep.', refresh_attempts, 'refreshes left.')
-            print('[Session] Total:', len(messageChecklist), ', Bullish:', currentBullish, ', Bearish:', currentBearish)
+            print(f'[Overall] Total: {(existingTweets+sessionTweets)}, Bullish: {(existingBullish+currentBullish)}, Bearish: {(existingBearish+currentBearish)}')
+            print('[Session] Total:', sessionTweets, ', Bullish:', currentBullish, ', Bearish:', currentBearish)
             refresh_attempts-=1
             time.sleep(time_between_refreshes)
 
