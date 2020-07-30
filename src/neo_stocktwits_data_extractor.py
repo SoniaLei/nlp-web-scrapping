@@ -95,6 +95,7 @@ def main():
         element = driver.find_element_by_id('onetrust-accept-btn-handler')
         element.send_keys(Keys.ENTER)
         print('cookies eaten')
+        timerStart = time.perf_counter()
 
         # infinite scroll may work for powerful PCs, but doesn't seem to be an option here
         # maybe attempt long scroll, append, and run the script again later?
@@ -171,9 +172,12 @@ def main():
             if quitting:
                 break
 
+            timeSinceStart = time.perf_counter()
+
             print('Going to sleep.', refresh_attempts, 'refreshes left.')
             print(f'[Overall] Total: {(existingTweets+sessionTweets)}, Bullish: {(existingBullish+currentBullish)}, Bearish: {(existingBearish+currentBearish)}')
             print('[Session] Total:', sessionTweets, ', Bullish:', currentBullish, ', Bearish:', currentBearish)
+            print(f'Script has been running for {(timeSinceStart-timerStart)//60} minutes.')
             refresh_attempts-=1
             time.sleep(time_between_refreshes)
 
