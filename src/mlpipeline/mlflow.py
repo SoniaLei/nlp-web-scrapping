@@ -44,7 +44,7 @@ class MlFlow:
     def tracking_uri(self, path):
         """
         Returns the abs path to mlruns folder
-        using the correxct `/` or `\` slide.
+        using the correct forward-slash or backward-slash.
         """
 
         if not isinstance(path, str):

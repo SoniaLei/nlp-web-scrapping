@@ -108,10 +108,12 @@ class Experiments:
     Experiments class that orchestrates the execution of multiple `Experiment`,
     including combination of experiments.
     """
-    runtime_save = True
-    test_Y = None
-    classes = None
-    collection = {}
+
+    def __init__(self):
+        self.runtime_save = True
+        self.test_Y = None
+        self.classes = None
+        self.collection = {}
 
     def add_experiment(self, exp_name, predictions, gridsearch, is_aggregated_model):
         """
@@ -123,8 +125,8 @@ class Experiments:
                                 predictions=predictions,
                                 gridsearch=gridsearch,
                                 is_aggregated_model=is_aggregated_model,
-                                classes=Experiments.classes,
-                                test_Y=Experiments.test_Y)
+                                classes=self.classes,
+                                test_Y=self.test_Y)
         if self.runtime_save:
             experiment.save_to_mlflow()
 
@@ -168,6 +170,8 @@ class Experiments:
             num_models = len(combined_model)
             weight = 1 / num_models
 
+            """TODO: The logic to set self.test_Y and self.classess needs to be changed,
+            as these variables are initiated outside the class"""
             probabilities = np.zeros((len(self.test_Y), len(self.classes)))
 
             for model in combined_model:

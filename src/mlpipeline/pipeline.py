@@ -108,8 +108,8 @@ class Pipelines:
         """
         # Setting Experiments safe_run as a default!
         # TODO maybe have this one in config file?
-        Experiments.runtime_save = safe_run
-        Experiments.test_Y = self.data.test_Y
+        self.experiments.runtime_save = safe_run
+        self.experiments.test_Y = self.data.test_Y
 
         for name, pipe_seq, params, cv in zip(self.names, self.sequences, self.parameters, self.cvs):
             pipeline = Pipeline(name=name,
@@ -122,8 +122,8 @@ class Pipelines:
 
             predictions = gridsearch.predict_proba(X=self.data.test_X)
 
-            if Experiments.classes is None:
-                Experiments.classes = gridsearch.classes
+            if self.experiments.classes is None:
+                self.experiments.classes = gridsearch.classes
 
             self.experiments.add_experiment(exp_name=name,
                                             predictions=predictions,
