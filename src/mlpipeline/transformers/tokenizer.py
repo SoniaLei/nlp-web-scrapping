@@ -6,6 +6,14 @@ from sklearn.base import TransformerMixin, BaseEstimator
 
 
 class Tokenizer(BaseEstimator, TransformerMixin):
+    """
+    Takes a string as input and returns a list of tokens.
+
+    Arguments:
+        to_lower - boolean, convert all tokens to lowercase
+        remove_stopwords - boolean, remove stopwords
+    """
+
     def __init__(self, to_lower=True, remove_stopwords=True):
         self._to_lower = to_lower
         self._remove_stopwords = remove_stopwords
@@ -21,16 +29,26 @@ class Tokenizer(BaseEstimator, TransformerMixin):
             nltk.download('stopwords')
             self._stop_words = set(stopwords.words('english'))
     
-    def fit(self, X, y=None):
+    def fit(self, x, y=None):
         return self
 
-    def transform(self, X, y=None):
-        if isinstance(X, pd.Series):
-            data = X.values
-        elif isinstance(X, np.ndarray):
-            data = X
+    def transform(self, x):
+        """
+        Arguments:
+            x - an array or pandas Series of strings, or a single string
+
+        Returns:
+            A numpy array, where each element is a list of tokens.
+        """
+
+        if isinstance(x, pd.Series):
+            data = x.values
+        elif isinstance(x, np.ndarray):
+            data = x
+        elif isinstance(x, str):
+            data = np.array([x])
         else:
-            raise TypeError('X must be either pandas Series or numpy array')
+            raise TypeError('X must be either pandas Series, numpy array or string')
         
         num_elements = data.shape[0]
 

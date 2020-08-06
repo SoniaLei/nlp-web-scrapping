@@ -5,58 +5,52 @@ import numpy as np
 
 class Word2VecVectorizer(BaseEstimator, TransformerMixin):
     """
-    Converts an array of lists with tokens into an array of lists with embeddings.
+    The vectorizer converts a list of tokens into embeddings and returns a vector, that represents
+    element-wise average of embeddings for each sample. The embeddings are calculated during fit()
+    method. Current implementation doesn't use pretrained embeddings.
 
     Arguments:
-    size -- vector size (dimension) returned for each token
-    iter -- number of iterations to fit all tokens to Word2Vec model
-    window -- 
-    max_embeddings -- maxinimum number of embeddings to store in each list
+        size - number of dimensions of the returned vector
+        iters - number of iterations to train Word2Vec model and calculate embeddings for each token
+        window - maximum distance between the current and predicted word within a sentence
     """
     
-    def __init__(self, size=50, iter=50, window=10, max_embeddings=None):
-        self._size = size
-        self._iter = iter
-        self._window = window
-        self._model = None
-        self._max_embeddings = max_embeddings
+    def __init__(self, size=50, iters=50, window=10):
+        self.size = size
+        self.iters = iters
+        self.window = window
+        self.model = None
 
-    def fit(self, X, y=None):
-        self._model = Word2Vec(X, size=self._size, iter=self._iter, window=self._window, min_count=2)
+    def fit(self, x, y=None):
+        self.model = Word2Vec(x, size=self.size, iter=self.iters, window=self.window, min_count=2)
         
         return self
 
-    def transform(self, X, y=None):
+    def transform(self, x):
         """
-        Converts array of lists with tokens into an array of lists with embeddings.
-
         Arguments:
-        X -- array of lists with tokens
-    
+            x - an array of lists with tokens
+
         Returns:
-        embeddings - array of lists with embeddings, each embedding having a shape (size, )
+            vectors - an array of shape (num_samples, size)
         """
 
-        embeddings = np.empty((X.shape[0], ), dtype=object)
+        vectors = np.empty((x.shape[0], self.size))
         i = 0
 
-        for list_tokens in X:
+        for tokens in x:
 
-            embeddings[i] = []
-            num_tokens = 0
+            vectorized_tokens = []
 
-            for token in list_tokens:
+            for t in tokens:
                 try:
-                    embeddings[i].append(self._model.wv[token])
-
-                    num_tokens += 1
-                    if self._max_embeddings is not None and num_tokens >= self._max_embeddings:
-                        break
-
+                    vectorized_tokens.append(self.model.wv[t])
                 except KeyError:
                     pass
 
+            if len(vectorized_tokens) > 0:
+                vectors[i] = np.mean(vectorized_tokens, axis=0)
+            
             i += 1
 
-        return embeddings
-    
+        return vectors

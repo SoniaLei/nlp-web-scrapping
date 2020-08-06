@@ -1,0 +1,32 @@
+# Block commenting of YAML files in VSCode and PyCharm can be achieved
+# by selecting lines and using shortcut Ctrl + /
+
+
+# Location of data files
+data:
+  train: "../data/testing/testing-tweets-train.csv"
+  test: "../data/testing/testing-tweets-test.csv"
+  features: "text"
+  target: "sentiment"
+
+transformers:
+  TfidfVectorizer:
+
+estimators:
+  RandomForestClassifier:
+    cv: 2
+    params:
+      max_depth: [50, 100, 200, 400]
+
+  LogisticRegression:
+    cv: 3
+    params:
+      solver: ['newton-cg', 'saga']
+
+  GradientBoostingClassifier:
+    cv: 5
+    params:
+      loss: 'deviance'
+      n_estimators: 100
+      criterion: 'mse'
+      min_samples_leaf: 20
