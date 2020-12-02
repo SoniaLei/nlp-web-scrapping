@@ -11,3 +11,5 @@ beautifulsoup4
 pytest
 pytest-cov
 gensim
+pyyaml
+matplotlib
